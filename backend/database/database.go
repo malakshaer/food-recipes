@@ -26,3 +26,11 @@ func connectMongoDB() (*mongo.Client, error) {
 
 	return client, nil
 }
+
+var Client *mongo.Client = connectMongoDB()
+
+func OpenCollection(client *mongo.Client, collectionName string) *mongo.Collection {
+	var collection *mongo.Collection = client.Database("restaurant").Collection(collectionName)
+
+	return collection
+}
