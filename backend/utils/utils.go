@@ -2,8 +2,6 @@ package utils
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/base64"
 	"errors"
 	"golang-food-recipes/database"
 	"golang-food-recipes/models"
@@ -11,17 +9,21 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	// "github.com/gin-contrib/sessions"
 	"github.com/gorilla/sessions"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
 )
+
+// "github.com/gin-contrib/sessions"
 
 var store sessions.Store
 
 func init() {
 	store = sessions.NewCookieStore([]byte("secret-key"))
 }
+
+var userCollection *mongo.Collection = database.OpenCollection("users")
 
 // Get user by email
 func GetUserByEmail(email string) (models.User, error) {
@@ -34,17 +36,17 @@ func GetUserByEmail(email string) (models.User, error) {
 	return user, nil
 }
 
-// Generate a random ID string
-func GenerateId() string {
-	id := primitive.NewObjectID()
-	return id.Hex()
-}
-
 // Hash a password string using SHA-256 and base64 encoding
 func HashPassword(password string) (string, error) {
-	hash := sha256.Sum256([]byte(password))
-	encodedHash := base64.URLEncoding.EncodeToString(hash[:])
-	return encodedHash, nil
+	// Generate a bcrypt hash of the password
+	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+
+	// Convert the hashed password to a string and return it
+	hashedPassword := string(hashed)
+	return hashedPassword, nil
 }
 
 // Generate a JWT token for a user by ID
@@ -66,17 +68,6 @@ func GenerateToken(user models.User) (string, error) {
 	}
 
 	return signedToken, nil
-}
-
-// Check if password is correct
-func CheckPassword(password string) (models.User, error) {
-	var user models.User
-	collection := database.OpenCollection("users")
-	err := collection.FindOne(context.Background(), bson.M{"password": password}).Decode(&user)
-	if err != nil {
-		return models.User{}, err
-	}
-	return user, nil
 }
 
 // Check if user is logged in
