@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"golang-food-recipes/database"
 	"golang-food-recipes/models"
 	"golang-food-recipes/utils"
@@ -73,8 +74,8 @@ func Register() gin.HandlerFunc {
 
 		// Return success response with user ID and JWT token
 		c.JSON(http.StatusOK, gin.H{
-			"id":    user.ID.Hex(),
-			"token": token,
+			"message": fmt.Sprintf("%s's account created successfully", user.Username),
+			"token":   token,
 		})
 	}
 }
@@ -135,8 +136,7 @@ func Login() gin.HandlerFunc {
 
 		// Return success response with user ID and JWT token
 		c.JSON(http.StatusOK, gin.H{
-			"message": "Successfully Logged in",
-			"id":      userFound.ID.Hex(),
+			"message": fmt.Sprintf("%s successfully logged in", userFound.Username),
 			"token":   token,
 		})
 
