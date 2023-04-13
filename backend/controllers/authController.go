@@ -13,6 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var userCollection *mongo.Collection = database.OpenCollection("users")
@@ -40,13 +41,14 @@ func Register() gin.HandlerFunc {
 		}
 		user.Password = hashedPassword
 
-		// Hash the user's confirm password before storing it in the database
-		hashedConfirmPassword, err := utils.HashPassword(user.ConfirmPassword)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		// Check if password and confirm password are equal
+		if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(user.ConfirmPassword)); err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Password and confirm password must be equal"})
 			return
 		}
-		user.ConfirmPassword = hashedConfirmPassword
+
+		// Remove the ConfirmPassword field from the user struct
+		user.ConfirmPassword = ""
 
 		// Generate an ID for the user
 		user.ID = primitive.NewObjectID()
@@ -107,7 +109,7 @@ func Login() gin.HandlerFunc {
 		}
 
 		// Check if password is correct
-		if _, err := utils.CheckPassword(userFound.Password); err != nil {
+		if err := bcrypt.CompareHashAndPassword([]byte(userFound.Password), []byte(user.Password)); err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid Email or password"})
 			return
 		}
