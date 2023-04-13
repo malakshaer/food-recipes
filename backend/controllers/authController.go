@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -78,8 +79,88 @@ func Register() gin.HandlerFunc {
 	}
 }
 
-func Hello() gin.HandlerFunc {
+func Login() gin.HandlerFunc {
+	store := sessions.NewCookieStore([]byte("secret-key"))
 	return func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Hello Me"})
+		// Check if user is already logged in
+		session, err := store.Get(c.Request, "session-name")
+		if err == nil {
+			userID := session.Values["user_id"]
+			if userID != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "User is already logged in"})
+				return
+			}
+		}
+
+		var user models.User
+		if err := c.BindJSON(&user); err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Check if the email exists in the database
+		userFound, err := utils.GetUserByEmail(user.Email)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid Email or password"})
+			return
+		}
+
+		// Check if password is correct
+		if _, err := utils.CheckPassword(userFound.Password); err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid Email or password"})
+			return
+		}
+
+		// Generate a JWT token for the user
+		token, err := utils.GenerateToken(user)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		userFound.Token = token
+
+		// Update the user's token in the database
+		update := bson.M{"$set": bson.M{"token": token}}
+		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": userFound.ID}, update); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Store the user's ID in the session
+		session.Values["user_id"] = userFound.ID.Hex()
+		if err := session.Save(c.Request, c.Writer); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Return success response with user ID and JWT token
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Successfully Logged in",
+			"id":      userFound.ID.Hex(),
+			"token":   token,
+		})
+
+	}
+}
+
+func Logout() gin.HandlerFunc {
+	store := sessions.NewCookieStore([]byte("secret-key"))
+	return func(c *gin.Context) {
+		// Get the session for the user
+		session, err := store.Get(c.Request, "session-name")
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Clear the session and save changes
+		session.Options.MaxAge = -1
+		if err := session.Save(c.Request, c.Writer); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Return success response
+		c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
 	}
 }
