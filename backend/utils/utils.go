@@ -47,21 +47,20 @@ func HashPassword(password string) (string, error) {
 	return encodedHash, nil
 }
 
-// Generate a JWT token for a user
+// Generate a JWT token for a user by ID
 func GenerateToken(user models.User) (string, error) {
-	// Set token expiration time to 30 minutes from now
-	expirationTime := time.Now().Add(30 * time.Minute).Unix()
+	// Set token expiration time
+	expirationTime := time.Now().Add(30000 * time.Minute).Unix()
 
 	// Create claims for JWT token
 	claims := jwt.MapClaims{
-		"id":    user.ID,
-		"email": user.Email,
-		"exp":   expirationTime,
+		"id":  user.ID,
+		"exp": expirationTime,
 	}
 
 	// Sign the token with the secret key and claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := token.SignedString([]byte("secretkey"))
+	signedToken, err := token.SignedString([]byte("secret-key"))
 	if err != nil {
 		return "", err
 	}
