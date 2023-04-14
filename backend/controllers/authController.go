@@ -7,6 +7,7 @@ import (
 	"golang-food-recipes/models"
 	"golang-food-recipes/utils"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
@@ -17,6 +18,7 @@ import (
 )
 
 var userCollection *mongo.Collection = database.OpenCollection("users")
+var secretKey string = os.Getenv("SECRET_KEY")
 
 func Register() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -83,7 +85,7 @@ func Register() gin.HandlerFunc {
 }
 
 func Login() gin.HandlerFunc {
-	store := sessions.NewCookieStore([]byte("secret-key"))
+	store := sessions.NewCookieStore([]byte(secretKey))
 	return func(c *gin.Context) {
 		// Check if user is already logged in
 		session, err := store.Get(c.Request, "session-name")
@@ -146,7 +148,7 @@ func Login() gin.HandlerFunc {
 }
 
 func Logout() gin.HandlerFunc {
-	store := sessions.NewCookieStore([]byte("secret-key"))
+	store := sessions.NewCookieStore([]byte(secretKey))
 	return func(c *gin.Context) {
 		// Get the session for the user
 		session, err := store.Get(c.Request, "session-name")
