@@ -7,13 +7,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// var host = os.Getenv("DB_HOST")
+// var port = os.Getenv("DB_PORT")
+
 func main() {
 
 	router := gin.Default()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
+	routes.AuthRoutes(router)
 
 	router.Use(middleware.Authentication())
-	routes.AuthRoutes(router)
+	routes.RecipeRoutes(router)
+	// router.Run(host + ":" + port)
 	router.Run("localhost:8080")
 }
