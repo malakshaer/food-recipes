@@ -89,3 +89,24 @@ func GetAllRecipes() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"recipes": recipes})
 	}
 }
+
+func GetRecipeById() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Get the recipe ID from the request
+		id, err := primitive.ObjectIDFromHex(c.Param("id"))
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Get the recipe from the database
+		var recipe models.Recipe
+		if err := recipeCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&recipe); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Return the recipe
+		c.JSON(http.StatusOK, gin.H{"recipe": recipe})
+	}
+}
