@@ -6,6 +6,7 @@ import (
 	"golang-food-recipes/database"
 	"golang-food-recipes/models"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -24,6 +25,12 @@ func init() {
 }
 
 var userCollection *mongo.Collection = database.OpenCollection("users")
+var secretKey string = os.Getenv("SECRET_KEY")
+
+type Claims struct {
+	UserID string `json:"userID"`
+	jwt.StandardClaims
+}
 
 // Get user by email
 func GetUserByEmail(email string) (models.User, error) {
@@ -55,14 +62,16 @@ func GenerateToken(user models.User) (string, error) {
 	expirationTime := time.Now().Add(30000 * time.Minute).Unix()
 
 	// Create claims for JWT token
-	claims := jwt.MapClaims{
-		"id":  user.ID,
-		"exp": expirationTime,
+	claims := &Claims{
+		UserID: user.ID.Hex(),
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime,
+		},
 	}
 
 	// Sign the token with the secret key and claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := token.SignedString([]byte("secret-key"))
+	signedToken, err := token.SignedString([]byte(secretKey))
 	if err != nil {
 		return "", err
 	}
