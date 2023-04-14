@@ -33,15 +33,15 @@ func CreateRecipe() gin.HandlerFunc {
 
 		// Create the recipe object
 		recipe := models.Recipe{
-			ID:             primitive.NewObjectID(),
-			Name:           input.Name,
-			Ingredients:    input.Ingredients,
-			Instructions:   input.Instructions,
-			TotalTime:      input.TotalTime,
-			RecipeCategory: input.RecipeCategory,
-			RecipeImage:    input.RecipeImage,
-			RecipeAuthor:   user.(models.User).ID,
-			RecipeDate:     time.Now().Format(time.RFC3339),
+			ID:              primitive.NewObjectID(),
+			Name:            input.Name,
+			Ingredients:     input.Ingredients,
+			Instructions:    input.Instructions,
+			TotalTime:       input.TotalTime,
+			RecipeCategory:  input.RecipeCategory,
+			RecipeImage:     input.RecipeImage,
+			RecipeAuthorID:  user.(models.User).ID,
+			RecipeCreatedAt: time.Now().Format(time.RFC3339),
 		}
 
 		// Store the recipe in the database
@@ -107,6 +107,92 @@ func GetRecipeById() gin.HandlerFunc {
 		}
 
 		// Return the recipe
+		c.JSON(http.StatusOK, gin.H{"recipe": recipe})
+	}
+}
+
+func UpdateRecipeById() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Get the recipe id from the request
+		id, err := primitive.ObjectIDFromHex(c.Param("id"))
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Get the user details from the context
+		user, exists := c.Get("user")
+		if !exists {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			return
+		}
+
+		// Get the updated recipe details from the request
+		var input models.Recipe
+		if err := c.BindJSON(&input); err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Get the recipe from the database
+		var recipe models.Recipe
+		if err := recipeCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&recipe); err != nil {
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Recipe not found"})
+			return
+		}
+
+		// Check if the user is authorized to update the recipe
+		if recipe.RecipeAuthorID != user.(models.User).ID {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+
+		// Update the recipe in the database
+		update := bson.M{
+			"$set": bson.M{
+				"Name":            input.Name,
+				"Ingredients":     input.Ingredients,
+				"Instructions":    input.Instructions,
+				"TotalTime":       input.TotalTime,
+				"RecipeCategory":  input.RecipeCategory,
+				"RecipeImage":     input.RecipeImage,
+				"RecipeUpdatedAt": time.Now().Format(time.RFC3339),
+			},
+		}
+
+		if _, err := recipeCollection.UpdateOne(context.Background(), bson.M{"_id": id}, update); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Get the updated recipe from the database
+		if err := recipeCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&recipe); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Get the user from the database
+		var dbUser models.User
+		if err := userCollection.FindOne(context.Background(), bson.M{"_id": user.(models.User).ID}).Decode(&dbUser); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Update the list of recipes of the user
+		for i, r := range dbUser.Recipes {
+			if r.ID == id {
+				dbUser.Recipes[i] = recipe
+				break
+			}
+		}
+
+		// Update the user in the database
+		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, bson.M{"$set": bson.M{"recipes": dbUser.Recipes}}); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Return the updated recipe
 		c.JSON(http.StatusOK, gin.H{"recipe": recipe})
 	}
 }
