@@ -196,3 +196,49 @@ func UpdateRecipeById() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"recipe": recipe})
 	}
 }
+
+func DeleteRecipeById() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Get the recipe id from the request
+		id, err := primitive.ObjectIDFromHex(c.Param("id"))
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Get the user details from the context
+		user, exists := c.Get("user")
+		if !exists {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			return
+		}
+
+		// Get the recipe from the database
+		var recipe models.Recipe
+		if err := recipeCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&recipe); err != nil {
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Recipe not found"})
+			return
+		}
+
+		// Check if the user is authorized to delete the recipe
+		if recipe.RecipeAuthorID != user.(models.User).ID {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
+
+		// Delete the recipe from the database
+		if _, err := recipeCollection.DeleteOne(context.Background(), bson.M{"_id": id}); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Remove the recipe from the user's list of recipes in the database
+		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, bson.M{"$pull": bson.M{"recipes": bson.M{"_id": id}}}); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Return success message
+		c.JSON(http.StatusOK, gin.H{"message": "Recipe deleted successfully"})
+	}
+}
