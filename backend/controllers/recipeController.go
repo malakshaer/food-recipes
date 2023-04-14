@@ -61,3 +61,31 @@ func CreateRecipe() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"recipe": recipe})
 	}
 }
+
+func GetAllRecipes() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Get all recipes from the database
+		var recipes []models.Recipe
+		cursor, err := recipeCollection.Find(context.Background(), bson.M{})
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		defer cursor.Close(context.Background())
+		for cursor.Next(context.Background()) {
+			var recipe models.Recipe
+			if err := cursor.Decode(&recipe); err != nil {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+			recipes = append(recipes, recipe)
+		}
+		if err := cursor.Err(); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Return all recipes
+		c.JSON(http.StatusOK, gin.H{"recipes": recipes})
+	}
+}
