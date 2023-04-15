@@ -35,6 +35,12 @@ func Register() gin.HandlerFunc {
 			return
 		}
 
+		// Check if password and confirm password are not equal
+		if user.Password != user.ConfirmPassword {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Password and Confirm password must be equal"})
+			return
+		}
+
 		// Hash the user's password before storing it in the database
 		hashedPassword, err := utils.HashPassword(user.Password)
 		if err != nil {
@@ -42,12 +48,6 @@ func Register() gin.HandlerFunc {
 			return
 		}
 		user.Password = hashedPassword
-
-		// Check if password and confirm password are equal
-		if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(user.ConfirmPassword)); err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Password and confirm password must be equal"})
-			return
-		}
 
 		// Remove the ConfirmPassword field from the user struct
 		user.ConfirmPassword = ""
