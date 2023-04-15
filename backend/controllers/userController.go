@@ -84,3 +84,22 @@ func UpdateUser() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"data": dbUser})
 	}
 }
+
+func GetUserProfile() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Get the user details from the context
+		user, exists := c.Get("user")
+		if !exists {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			return
+		}
+		// Retrieve the user data from the database
+		var dbUser models.User
+		err := userCollection.FindOne(context.Background(), bson.M{"_id": user.(models.User).ID}).Decode(&dbUser)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"data": dbUser})
+	}
+}
