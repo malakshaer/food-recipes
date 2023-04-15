@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func UpdateUser() gin.HandlerFunc {
@@ -120,5 +121,23 @@ func GetAllUsers() gin.HandlerFunc {
 			users = append(users, user)
 		}
 		c.JSON(http.StatusOK, gin.H{"data": users})
+	}
+}
+
+func GetUserById() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Get the user id from the request
+		id, err := primitive.ObjectIDFromHex(c.Param("id"))
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		// Retrieve the user data from the database
+		var dbUser models.User
+		if err := userCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&dbUser); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"data": dbUser})
 	}
 }
