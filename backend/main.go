@@ -18,6 +18,7 @@ func main() {
 	routes.AuthRoutes(router)
 
 	router.Use(middleware.Authentication())
+	routes.UserRoutes(router)
 	routes.RecipeRoutes(router)
 	// router.Run(host + ":" + port)
 	router.Run("localhost:8080")
