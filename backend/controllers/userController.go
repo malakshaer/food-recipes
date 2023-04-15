@@ -103,3 +103,22 @@ func GetUserProfile() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"data": dbUser})
 	}
 }
+
+func GetAllUsers() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Retrieve all users from the database
+		cursor, err := userCollection.Find(context.Background(), bson.M{})
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		defer cursor.Close(context.Background())
+		var users []models.User
+		for cursor.Next(context.Background()) {
+			var user models.User
+			cursor.Decode(&user)
+			users = append(users, user)
+		}
+		c.JSON(http.StatusOK, gin.H{"data": users})
+	}
+}
