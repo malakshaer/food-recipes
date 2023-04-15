@@ -5,13 +5,13 @@ import (
 )
 
 type User struct {
-	ID              primitive.ObjectID `bson:"_id"`
-	Username        string             `json:"username"`
-	Email           string             `json:"email"`
+	ID              primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	Username        string             `json:"username,omitempty" json:"UserName,omitempty"`
+	Email           string             `json:"email,omitempty" json:"Email,omitempty"`
 	Password        string             `json:"password"`
 	ConfirmPassword string             `json:"confirm_password"`
-	ProfileImage    string             `json:"profile_image"`
-	ProfileBio      string             `json:"profile_bio"`
+	ProfileImage    string             `json:"profileimage,omitempty" json:"ProfileImage,omitempty"`
+	ProfileBio      string             `json:"profilebio,omitempty" json:"ProfileBio,omitempty"`
 	Token           string             `json:"token"`
 	Recipes         []Recipe           `json:"Recipes,omitempty" json:"recipes,omitempty"`
 }
