@@ -101,3 +101,58 @@ func UnSaveRecipe() gin.HandlerFunc {
 		})
 	}
 }
+
+func LikeRecipe() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Get the user details from the context
+		user, exists := c.Get("user")
+		if !exists {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			return
+		}
+
+		// Get the recipe id from the request
+		id, err := primitive.ObjectIDFromHex(c.Param("id"))
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Retrieve the recipe data from the database
+		var recipe models.Recipe
+		if err := recipeCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&recipe); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve recipe details"})
+			return
+		}
+
+		// Check if the user already liked the recipe
+		for _, likedRecipe := range user.(models.User).LikedRecipes {
+			if likedRecipe.ID == recipe.ID {
+				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Recipe already liked"})
+				return
+			}
+		}
+
+		// Create liked recipe
+		var liked models.LikedRecipes
+		liked.ID = primitive.NewObjectID()
+		liked.RecipeID = id
+		liked.UserID = user.(models.User).ID
+
+		// Update the user's liked recipes
+		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, bson.M{"$push": bson.M{"likedrecipes": liked}}); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Update the recipe's likes
+		if _, err := recipeCollection.UpdateOne(context.Background(), bson.M{"_id": id}, bson.M{"$inc": bson.M{"likes": 1}}); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Recipe liked successfully",
+		})
+	}
+}
