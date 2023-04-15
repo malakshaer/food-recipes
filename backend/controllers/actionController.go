@@ -127,7 +127,7 @@ func LikeRecipe() gin.HandlerFunc {
 
 		// Check if the user already liked the recipe
 		for _, likedRecipe := range user.(models.User).LikedRecipes {
-			if likedRecipe.ID == recipe.ID {
+			if likedRecipe.RecipeID == recipe.ID {
 				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Recipe already liked"})
 				return
 			}
@@ -154,5 +154,54 @@ func LikeRecipe() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Recipe liked successfully",
 		})
+	}
+}
+
+func UnLikeRecipe() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Get the user details from the context
+		user, exists := c.Get("user")
+		if !exists {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			return
+		}
+
+		// Get the recipe id from the request
+		id, err := primitive.ObjectIDFromHex(c.Param("id"))
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Check if recipe exists in user's liked recipes
+		found := false
+		for _, likedRecipe := range user.(models.User).LikedRecipes {
+			if likedRecipe.RecipeID == id {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Recipe not found in liked recipes"})
+			return
+		}
+
+		// Remove the recipe from the user's liked recipes
+		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, bson.M{"$pull": bson.M{"likedrecipes": bson.M{"RecipeID": id}}}); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Update the recipe's likes
+		if _, err := recipeCollection.UpdateOne(context.Background(), bson.M{"_id": id}, bson.M{"$inc": bson.M{"likes": -1}}); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Recipe unLiked successfully",
+		})
+
 	}
 }
