@@ -55,6 +55,11 @@ func Register() gin.HandlerFunc {
 		// Generate an ID for the user
 		user.ID = primitive.NewObjectID()
 
+		// Insert recipes and saved recipes as arrays
+		user.Recipes = []models.Recipe{}
+		user.SavedRecipes = []models.SavedRecipes{}
+		user.LikedRecipes = []models.LikedRecipes{}
+
 		// Store the user in the database
 		if _, err := userCollection.InsertOne(context.Background(), user); err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
