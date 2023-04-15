@@ -59,3 +59,45 @@ func SaveRecipe() gin.HandlerFunc {
 		})
 	}
 }
+
+func UnSaveRecipe() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Get the user details from the context
+		user, exists := c.Get("user")
+		if !exists {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			return
+		}
+
+		// Get the recipe id from the request
+		id, err := primitive.ObjectIDFromHex(c.Param("id"))
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Check if recipe exists in user's saved recipes
+		found := false
+		for _, savedRecipe := range user.(models.User).SavedRecipes {
+			if savedRecipe.RecipeID == id {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Recipe not found in saved recipes"})
+			return
+		}
+
+		// Remove the recipe from the user's saved recipes
+		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, bson.M{"$pull": bson.M{"savedrecipes": bson.M{"RecipeID": id}}}); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Recipe unsaved successfully",
+		})
+	}
+}
