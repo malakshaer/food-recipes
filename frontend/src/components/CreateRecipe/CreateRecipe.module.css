@@ -30,7 +30,28 @@
     padding: 0.25rem;
     width: 100%;
 }
+
+.category {
+    font-size: 1rem;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    appearance: none;
+    width: 100%;
+    max-width: 20rem;
+}
   
+.category:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #60a5fa;
+    border-color: #60a5fa;
+}
+  
+.category option {
+    font-size: 1rem;
+}  
+
 .actions {
     margin-top: 1rem;
     text-align: right;
@@ -44,7 +65,8 @@
     padding: 0.5rem 1.5rem;
     border: 1px solid #77002e;
     border-radius: 4px;
-    font-weight: bold;
+    font-weight: bold;     
+
 }
   
 .actions button:hover,
