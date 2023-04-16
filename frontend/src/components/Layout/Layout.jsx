@@ -1,7 +1,7 @@
 import classes from "./Layout.module.css";
 import NavBar from "../NavBar/NavBar";
 
-const Layout = () => {
+const Layout = (props) => {
   return (
     <div>
       <NavBar />
