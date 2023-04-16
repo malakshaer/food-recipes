@@ -11,7 +11,6 @@ function Home() {
       </Head>
 
       <main>
-        <h1>Sustainable Food Recipes Blog</h1>
         <HomePage />
       </main>
     </div>
