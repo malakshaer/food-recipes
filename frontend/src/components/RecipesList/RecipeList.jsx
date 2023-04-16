@@ -12,6 +12,9 @@ const RecipeList = (props) => {
           ingredients={recipe.ingredients}
           instructions={recipe.instructions}
           image={recipe.image}
+          time={recipe.total_time}
+          category={recipe.category}
+          date={recipe.created_at}
         />
       ))}
     </ul>
