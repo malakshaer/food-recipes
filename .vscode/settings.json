@@ -1,0 +1,9 @@
+{
+    "go.alternateTools": {
+        "go.languageServerExperimentalFeatures": {
+            "format": {
+                "removeUnusedImports": false
+            }
+        }
+    }
+}
