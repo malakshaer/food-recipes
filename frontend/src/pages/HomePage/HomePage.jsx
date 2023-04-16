@@ -16,6 +16,9 @@ const FAKE_RECIPES = [
     instructions:
       "Heat oil in a large pot over medium heat. Cook and stir onion, green bell pepper, and garlic in the hot oil until onion has softened and turned translucent, about 5 minutes. Stir crushed tomatoes, tomato paste, and water into the onion mixture; season with salt and pepper. Bring sauce to a boil, reduce heat to medium-low, and simmer until flavors have blended, about 30 minutes.",
     image: "",
+    total_time: "10min",
+    category: "meal",
+    created_at: "1/1/2023",
   },
   {
     id: 2,
@@ -35,6 +38,9 @@ const FAKE_RECIPES = [
     instructions:
       "Preheat oven to 350 degrees F (175 degrees C). Melt butter in a skillet over medium heat; cook and stir onion until tender and translucent, about 5 minutes. Mix onion, soup, cream cheese, sour cream, and spinach together in a bowl. Pour mixture into the pie crust. Bake in the preheated oven until set, 45 to 50 minutes.",
     image: "",
+    total_time: "10min",
+    category: "meal",
+    created_at: "1/1/2023",
   },
 ];
 
