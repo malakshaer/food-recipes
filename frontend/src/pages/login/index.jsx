@@ -21,7 +21,7 @@ const Login = () => {
 
   return (
     <form className={classes.form} onSubmit={handleSubmit}>
-      <h3>Register</h3>
+      <h3>Sign in to continue</h3>
 
       <div className={classes.input}>
         <input
