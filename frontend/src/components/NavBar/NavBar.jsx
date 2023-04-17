@@ -1,3 +1,4 @@
+import Logout from "../Logout/Logout";
 import classes from "./NavBar.module.css";
 import Link from "next/link";
 
@@ -12,6 +13,9 @@ const NavBar = () => {
           </li>
           <li>
             <Link href="/profile">Profile</Link>
+          </li>
+          <li>
+            <Logout />
           </li>
         </ul>
       </nav>
