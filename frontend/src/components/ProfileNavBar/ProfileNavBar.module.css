@@ -4,8 +4,7 @@
     margin: 0 auto;
     display: flex;
     align-items: center;
-    position: relative;
-    padding: 0.5rem 0rem;
+    position: relative;    
     background-color: white;
     border-top: 1px solid #ccc;
     border-bottom: 1px solid #ccc;
@@ -59,7 +58,7 @@
     opacity: 0; 
     transition: opacity 0.2s ease-in-out;
     border-radius: 50px;
-    transform: translateY(10px);
+    transform: translateY(17px);
 }
   
 .users_navigation_menu button:focus::after,
