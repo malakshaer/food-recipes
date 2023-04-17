@@ -1,7 +1,6 @@
 import { Fragment } from "react";
 import RecipeList from "../../components/RecipesList/RecipeList";
 import SearchBar from "../../components/SearchBar/SearchBar";
-import classes from "./Home.module.css";
 
 const FAKE_RECIPES = [
   {
@@ -70,9 +69,7 @@ const HomePage = () => {
   return (
     <Fragment>
       <SearchBar />
-      <div className={classes.list}>
-        <RecipeList recipes={FAKE_RECIPES} />
-      </div>
+      <RecipeList recipes={FAKE_RECIPES} />
     </Fragment>
   );
 };
