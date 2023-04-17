@@ -1,6 +1,28 @@
+import { Fragment } from "react";
 import RecipeList from "../../components/RecipesList/RecipeList";
+import SearchBar from "../../components/SearchBar/SearchBar";
+import classes from "./Home.module.css";
 
 const FAKE_RECIPES = [
+  {
+    id: 1,
+    name: "Spaghetti",
+    ingredients: [
+      { id: 1, text: "1/2 cup olive oil" },
+      { id: 2, text: "1 onion, chopped" },
+      { id: 3, text: "1 green bell pepper, chopped" },
+      { id: 4, text: "2 cloves garlic, chopped" },
+      { id: 5, text: "1 (28 ounce) can crushed tomatoes" },
+      { id: 6, text: "1 (6 ounce) can tomato paste" },
+      { id: 7, text: "1/2 cup water" },
+    ],
+    instructions:
+      "Heat oil in a large pot over medium heat. Cook and stir onion, green bell pepper, and garlic in the hot oil until onion has softened and turned translucent, about 5 minutes. Stir crushed tomatoes, tomato paste, and water into the onion mixture; season with salt and pepper. Bring sauce to a boil, reduce heat to medium-low, and simmer until flavors have blended, about 30 minutes.",
+    image: "",
+    total_time: "10min",
+    category: "meal",
+    created_at: "1/1/2023",
+  },
   {
     id: 1,
     name: "Spaghetti",
@@ -45,7 +67,14 @@ const FAKE_RECIPES = [
 ];
 
 const HomePage = () => {
-  return <RecipeList recipes={FAKE_RECIPES} />;
+  return (
+    <Fragment>
+      <SearchBar />
+      <div className={classes.list}>
+        <RecipeList recipes={FAKE_RECIPES} />
+      </div>
+    </Fragment>
+  );
 };
 
 export default HomePage;
