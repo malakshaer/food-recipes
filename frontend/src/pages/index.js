@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Register from "./register";
+import HomePage from "./home";
 
 function Home() {
   return (
@@ -11,7 +11,7 @@ function Home() {
       </Head>
 
       <main>
-        <Register />
+        <HomePage />
       </main>
     </div>
   );
