@@ -2,6 +2,8 @@ import { useRouter } from "next/router";
 import classes from "./RecipeItem.module.css";
 import Image from "next/image";
 import recipeImage from "../../../public/Spaghetti.jpg";
+import LikeButton from "../LikeButton/LikeButton";
+import SaveButton from "../SaveButton/SaveButton";
 
 const RecipeItem = (props) => {
   const router = useRouter();
@@ -10,25 +12,39 @@ const RecipeItem = (props) => {
     router.push("/" + props.id);
   };
 
+  const handleCardClick = (event) => {
+    if (
+      event.target.tagName !== "BUTTON" &&
+      event.target.tagName !== "path" &&
+      event.target.tagName !== "svg"
+    ) {
+      showRecipeDetails();
+    }
+  };
+
   return (
-    <div className={classes.card}>
+    <div className={classes.card} onClick={handleCardClick}>
       <div className={classes.image}>
-        <Image src={recipeImage} alt="recipe-image" priority="high" />
+        <Image src={recipeImage} alt="recipe-image" />
       </div>
       <div className={classes.content}>
-        <h1>{props.name}</h1>
-        <p>({props.category})</p>
         <div className={classes.time}>
-          <h3>⏱</h3>
-          <p>{props.total_time} minutes</p>
+          <h1>{props.name}</h1>
+          <p>⏱{props.total_time} minutes</p>
         </div>
-        <h3>Created At:</h3>
-        <p>{props.created_at}</p>
-      </div>
-      <div>
-        <button className={classes.actions} onClick={showRecipeDetails}>
-          Show
-        </button>
+        <div className={classes.user}>
+          <Image src={recipeImage} alt="author-profile-image" />
+          <p>Malak Shaer</p>
+        </div>
+        <div className={classes.actions}>
+          <div className={classes.buttonWrapper}>
+            <SaveButton />
+          </div>
+          <div className={classes.buttonWrapper}>
+            <LikeButton />
+            <span>{props.likes}1</span>
+          </div>
+        </div>
       </div>
     </div>
   );
