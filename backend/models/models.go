@@ -21,7 +21,7 @@ type User struct {
 type Recipe struct {
 	ID              primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Name            string             `bson:"Name,omitempty" json:"name,omitempty"`
-	Ingredients     string             `bson:"Ingredients,omitempty" json:"ingredients,omitempty"`
+	Ingredients     []Ingredients      `bson:"Ingredients,omitempty" json:"ingredients,omitempty"`
 	Instructions    string             `bson:"Instructions,omitempty" json:"instructions,omitempty"`
 	TotalTime       string             `bson:"TotalTime,omitempty" json:"totaltime,omitempty"`
 	RecipeCategory  string             `bson:"RecipeCategory,omitempty" json:"recipecategory,omitempty"`
@@ -32,12 +32,17 @@ type Recipe struct {
 	Likes           int32              `bson:"Likes,omitempty" json:"likes,omitempty"`
 }
 
+type Ingredients struct {
+	ID   string `bson:"IngredientID,omitempty" json:"ingredientid,omitempty"`
+	Text string `bson:"Text,omitempty" json:"text,omitempty"`
+}
+
 type SavedRecipes struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	RecipeID     primitive.ObjectID `bson:"RecipeID,omitempty" json:"recipeid,omitempty"`
 	UserID       primitive.ObjectID `bson:"UserID,omitempty" json:"userid,omitempty"`
 	Name         string             `bson:"Name,omitempty" json:"name,omitempty"`
-	Ingredients  string             `bson:"Ingredients,omitempty" json:"ingredients,omitempty"`
+	Ingredients  []Ingredients      `bson:"Ingredients,omitempty" json:"ingredients,omitempty"`
 	Instructions string             `bson:"Instructions,omitempty" json:"instructions,omitempty"`
 	TotalTime    string             `bson:"TotalTime,omitempty" json:"totaltime,omitempty"`
 	Category     string             `bson:"Category,omitempty" json:"category,omitempty"`
