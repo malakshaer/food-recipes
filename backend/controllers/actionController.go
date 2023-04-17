@@ -205,3 +205,51 @@ func UnLikeRecipe() gin.HandlerFunc {
 
 	}
 }
+
+func SearchRecipe() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Get the user details from the context
+		_, exists := c.Get("user")
+		if !exists {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			return
+		}
+
+		// Get the search query from the request
+		query := c.Query("q")
+
+		// Get the search results
+		var results []models.Recipe
+
+		// Search by category or name
+		cursor, err := recipeCollection.Find(context.Background(), bson.M{"$or": []bson.M{
+			{"Name": bson.M{"$regex": query, "$options": "i"}},
+			{"RecipeCategory": bson.M{"$regex": query, "$options": "i"}},
+		}})
+
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		var categoryResults []models.Recipe
+		if err := cursor.All(context.Background(), &categoryResults); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		results = append(results, categoryResults...)
+
+		// Remove duplicates
+		uniqueResults := make([]models.Recipe, 0, len(results))
+		idMap := make(map[primitive.ObjectID]bool)
+		for _, recipe := range results {
+			if _, ok := idMap[recipe.ID]; !ok {
+				uniqueResults = append(uniqueResults, recipe)
+				idMap[recipe.ID] = true
+			}
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"results": uniqueResults,
+		})
+	}
+}
