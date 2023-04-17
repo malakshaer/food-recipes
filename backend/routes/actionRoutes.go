@@ -11,4 +11,5 @@ func ActionRoutes(incomingRoutes *gin.Engine) {
 	incomingRoutes.POST("unsave_recipe/:id", controller.UnSaveRecipe())
 	incomingRoutes.POST("like_recipe/:id", controller.LikeRecipe())
 	incomingRoutes.POST("unlike_recipe/:id", controller.UnLikeRecipe())
+	incomingRoutes.GET("search", controller.SearchRecipe())
 }
