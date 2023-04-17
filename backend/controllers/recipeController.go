@@ -20,17 +20,15 @@ func CreateRecipe() gin.HandlerFunc {
 		// Get the user details from the context
 		user, exists := c.Get("user")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
 			return
 		}
-
 		// Get recipe
 		var input models.Recipe
-		if err := c.BindJSON(&input); err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		if err := c.ShouldBindJSON(&input); err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
 			return
 		}
-
 		// Create the recipe object
 		recipe := models.Recipe{
 			ID:              primitive.NewObjectID(),
@@ -43,20 +41,17 @@ func CreateRecipe() gin.HandlerFunc {
 			RecipeAuthorID:  user.(models.User).ID,
 			RecipeCreatedAt: time.Now().Format(time.RFC3339),
 		}
-
 		// Store the recipe in the database
 		if _, err := recipeCollection.InsertOne(context.Background(), recipe); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to store recipe in the database"})
 			return
 		}
-
 		// Add the recipe to the user's recipes list in the database
 		update := bson.M{"$push": bson.M{"recipes": recipe}}
 		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, update); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user's recipes list in the database"})
 			return
 		}
-
 		// Return the recipe
 		c.JSON(http.StatusOK, gin.H{"recipe": recipe})
 	}
