@@ -13,10 +13,6 @@ const EditAccount = () => {
   const submitHandler = (event) => {
     event.preventDefault();
 
-    if (profileImage) {
-      UserData = { ...UserData, profileImage };
-    }
-
     let UserData = {
       userName,
       email,
@@ -25,6 +21,10 @@ const EditAccount = () => {
       password,
       confirmPassword,
     };
+
+    if (profileImage) {
+      UserData = { ...UserData, profileImage };
+    }
 
     console.log(UserData);
   };
@@ -38,7 +38,6 @@ const EditAccount = () => {
             type="text"
             required
             id="name"
-            value={userName}
             onChange={(e) => setUserName(e.target.value)}
           />
         </div>
@@ -47,7 +46,6 @@ const EditAccount = () => {
           <input
             type="file"
             id="image"
-            value={profileImage}
             onChange={(e) => {
               const file = e.target.files[0];
               const reader = new FileReader();
@@ -64,7 +62,6 @@ const EditAccount = () => {
             type="text"
             required
             id="email"
-            value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
@@ -74,7 +71,6 @@ const EditAccount = () => {
             type="text"
             required
             id="bio"
-            value={bio}
             onChange={(e) => setBio(e.target.value)}
           />
         </div>
@@ -84,7 +80,6 @@ const EditAccount = () => {
             type="password"
             required
             id="password"
-            value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
@@ -95,7 +90,6 @@ const EditAccount = () => {
             type="password"
             required
             rows="5"
-            value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           ></input>
         </div>
