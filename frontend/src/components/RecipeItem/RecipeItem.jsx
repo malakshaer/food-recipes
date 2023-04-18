@@ -35,11 +35,11 @@ const RecipeItem = (props) => {
       <div className={classes.content}>
         <div className={classes.time}>
           <h1>{props.name}</h1>
-          <p>⏱{props.total_time} minutes</p>
         </div>
+        <span>⏱{props.time}</span>
         <div className={classes.user}>
           <Image src={recipeImage} alt="author-profile-image" />
-          <p>Malak Shaer</p>
+          <p>{props.authorName}</p>
         </div>
         <div className={classes.actions}>
           {props.showButton && (
@@ -55,7 +55,7 @@ const RecipeItem = (props) => {
           </div>
           <div className={classes.buttonWrapper}>
             <LikeButton />
-            <span>{props.likes}1</span>
+            <span>{props.likes}</span>
           </div>
         </div>
       </div>
