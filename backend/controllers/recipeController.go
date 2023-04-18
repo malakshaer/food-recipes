@@ -31,15 +31,18 @@ func CreateRecipe() gin.HandlerFunc {
 		}
 		// Create the recipe object
 		recipe := models.Recipe{
-			ID:              primitive.NewObjectID(),
-			Name:            input.Name,
-			Ingredients:     input.Ingredients,
-			Instructions:    input.Instructions,
-			TotalTime:       input.TotalTime,
-			RecipeCategory:  input.RecipeCategory,
-			RecipeImage:     input.RecipeImage,
-			RecipeAuthorID:  user.(models.User).ID,
-			RecipeCreatedAt: time.Now().Format(time.RFC3339),
+			ID:                primitive.NewObjectID(),
+			Name:              input.Name,
+			Ingredients:       input.Ingredients,
+			Instructions:      input.Instructions,
+			TotalTime:         input.TotalTime,
+			RecipeCategory:    input.RecipeCategory,
+			RecipeImage:       input.RecipeImage,
+			RecipeAuthorID:    user.(models.User).ID,
+			RecipeAuthorName:  user.(models.User).Username,
+			RecipeAuthorImage: user.(models.User).ProfileImage,
+			RecipeAuthorBio:   user.(models.User).ProfileBio,
+			RecipeCreatedAt:   time.Now().Format(time.RFC3339),
 		}
 		// Store the recipe in the database
 		if _, err := recipeCollection.InsertOne(context.Background(), recipe); err != nil {
