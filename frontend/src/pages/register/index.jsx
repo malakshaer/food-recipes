@@ -1,10 +1,10 @@
 import classes from "./Register.module.css";
 import { useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import axios from "axios";
 
-const Register = () => {
+const Register = ({ token }) => {
   const router = useRouter();
   const userNameInputRef = useRef();
   const emailInputRef = useRef();
@@ -102,5 +102,14 @@ const Register = () => {
     </form>
   );
 };
+
+export async function getServerSideProps(context) {
+  const token = context.req.cookies.token || null;
+  return {
+    props: {
+      token,
+    },
+  };
+}
 
 export default Register;
