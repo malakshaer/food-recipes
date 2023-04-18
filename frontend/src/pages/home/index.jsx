@@ -69,7 +69,7 @@ const HomePage = () => {
   return (
     <Fragment>
       <SearchBar />
-      <RecipeList recipes={FAKE_RECIPES} />
+      <RecipeList recipes={FAKE_RECIPES} showButton={false} />
     </Fragment>
   );
 };
