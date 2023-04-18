@@ -4,12 +4,17 @@ import Image from "next/image";
 import recipeImage from "../../../public/Spaghetti.jpg";
 import LikeButton from "../LikeButton/LikeButton";
 import SaveButton from "../SaveButton/SaveButton";
+import { FaEdit } from "react-icons/fa";
 
 const RecipeItem = (props) => {
   const router = useRouter();
 
   const showRecipeDetails = () => {
-    router.push("/" + props.id);
+    router.push(`/recipe-details/${props.id}`);
+  };
+
+  const handleEditRecipe = () => {
+    router.push(`/edit-recipe/${props.id}`);
   };
 
   const handleCardClick = (event) => {
@@ -37,6 +42,14 @@ const RecipeItem = (props) => {
           <p>Malak Shaer</p>
         </div>
         <div className={classes.actions}>
+          {props.showButton && (
+            <div className={classes.buttonWrapper}>
+              <button onClick={handleEditRecipe}>
+                <FaEdit />
+                Edit Recipe
+              </button>
+            </div>
+          )}
           <div className={classes.buttonWrapper}>
             <SaveButton />
           </div>
