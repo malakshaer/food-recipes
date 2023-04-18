@@ -59,6 +59,15 @@
     gap: 10px;
 }
 
+.buttonWrapper button {
+    border: 1px solid gray;
+    border-radius: 5px;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 20px;
+    color: grey;    
+}
+
 .actions span {
     font-size: 25px;
     color: grey;
