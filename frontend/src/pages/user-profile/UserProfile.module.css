@@ -5,6 +5,8 @@
     border-radius: 0.5rem;
     justify-content: flex-start;
     position: relative;
+    margin-left: 60px;  
+    margin-right: 60px;  
 }
 
 .profile::after {
