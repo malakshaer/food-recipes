@@ -19,17 +19,20 @@ type User struct {
 }
 
 type Recipe struct {
-	ID              primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	Name            string             `bson:"Name,omitempty" json:"name,omitempty"`
-	Ingredients     []Ingredients      `bson:"Ingredients,omitempty" json:"ingredients,omitempty"`
-	Instructions    string             `bson:"Instructions,omitempty" json:"instructions,omitempty"`
-	TotalTime       string             `bson:"TotalTime,omitempty" json:"totaltime,omitempty"`
-	RecipeCategory  string             `bson:"RecipeCategory,omitempty" json:"recipecategory,omitempty"`
-	RecipeImage     string             `bson:"RecipeImage,omitempty" json:"recipeimage,omitempty"`
-	RecipeAuthorID  primitive.ObjectID `bson:"RecipeAuthorID,omitempty" json:"recipeauthorid,omitempty"`
-	RecipeCreatedAt string             `bson:"RecipeCreatedAt,omitempty" json:"recipecreatedat,omitempty"`
-	RecipeUpdatedAt string             `bson:"RecipeUpdatedAt,omitempty" json:"recipeupdatedat,omitempty"`
-	Likes           int32              `bson:"Likes,omitempty" json:"likes,omitempty"`
+	ID                primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	Name              string             `bson:"Name,omitempty" json:"name,omitempty"`
+	Ingredients       []Ingredients      `bson:"Ingredients,omitempty" json:"ingredients,omitempty"`
+	Instructions      string             `bson:"Instructions,omitempty" json:"instructions,omitempty"`
+	TotalTime         string             `bson:"TotalTime,omitempty" json:"totaltime,omitempty"`
+	RecipeCategory    string             `bson:"RecipeCategory,omitempty" json:"recipecategory,omitempty"`
+	RecipeImage       string             `bson:"RecipeImage,omitempty" json:"recipeimage,omitempty"`
+	RecipeAuthorID    primitive.ObjectID `bson:"RecipeAuthorID,omitempty" json:"recipeauthorid,omitempty"`
+	RecipeAuthorName  string             `bson:"RecipeAuthorName,omitempty" json:"recipeauthorname,omitempty"`
+	RecipeAuthorImage string             `bson:"RecipeAuthorImage,omitempty" json:"recipeauthorimage,omitempty"`
+	RecipeAuthorBio   string             `bson:"RecipeAuthorBio,omitempty" json:"recipeauthorbio,omitempty"`
+	RecipeCreatedAt   string             `bson:"RecipeCreatedAt,omitempty" json:"recipecreatedat,omitempty"`
+	RecipeUpdatedAt   string             `bson:"RecipeUpdatedAt,omitempty" json:"recipeupdatedat,omitempty"`
+	Likes             int32              `bson:"Likes,omitempty" json:"likes,omitempty"`
 }
 
 type Ingredients struct {
