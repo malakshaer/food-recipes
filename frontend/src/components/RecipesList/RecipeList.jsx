@@ -15,6 +15,7 @@ const RecipeList = (props) => {
           time={recipe.total_time}
           category={recipe.category}
           date={recipe.created_at}
+          showButton={props.showButton}
         />
       ))}
     </ul>
