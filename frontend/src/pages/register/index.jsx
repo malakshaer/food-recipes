@@ -1,28 +1,50 @@
 import classes from "./Register.module.css";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import axios from "axios";
 
 const Register = () => {
+  const router = useRouter();
   const userNameInputRef = useRef();
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
   const confirmPasswordInputRef = useRef();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const userName = userNameInputRef.current.value;
+    const username = userNameInputRef.current.value;
     const email = emailInputRef.current.value;
     const password = passwordInputRef.current.value;
-    const confirmPassword = confirmPasswordInputRef.current.value;
+    const confirm_password = confirmPasswordInputRef.current.value;
 
     const data = {
-      userName,
+      username,
       email,
       password,
-      confirmPassword,
+      confirm_password,
     };
-    console.log(data);
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await axios.post(
+        `${process.env.API_ENDPOINT}register`,
+        data
+      );
+      console.log(response.data.message);
+
+      localStorage.setItem("token", response.data.token);
+      router.push("/home");
+    } catch (error) {
+      console.error("There was an error:", error);
+      setErrorMessage(error.response.data.error || "An error occurred");
+    }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -68,6 +90,7 @@ const Register = () => {
           ref={confirmPasswordInputRef}
         />
       </div>
+      {errorMessage && <div className={classes.error}>{errorMessage}</div>}
       <div className={classes.footer}>
         <button>Register</button>
         <div>

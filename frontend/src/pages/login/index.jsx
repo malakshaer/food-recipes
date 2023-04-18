@@ -1,10 +1,15 @@
 import classes from "./Login.module.css";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
+import axios from "axios";
+import { useRouter } from "next/router";
 
 const Login = () => {
+  const router = useRouter();
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -16,7 +21,23 @@ const Login = () => {
       email,
       password,
     };
-    console.log(data);
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await axios.post(
+        `${process.env.API_ENDPOINT}login`,
+        data
+      );
+      console.log(response.data);
+
+      localStorage.setItem("token", response.data.token);
+      router.push("/home");
+    } catch (error) {
+      setErrorMessage(error.response.data.error || "An error occurred");
+    }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -43,6 +64,7 @@ const Login = () => {
           ref={passwordInputRef}
         />
       </div>
+      {errorMessage && <div className={classes.error}>{errorMessage}</div>}
       <div className={classes.footer}>
         <button>Login</button>
         <div>
