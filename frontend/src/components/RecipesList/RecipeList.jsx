@@ -11,10 +11,12 @@ const RecipeList = (props) => {
           name={recipe.name}
           ingredients={recipe.ingredients}
           instructions={recipe.instructions}
-          image={recipe.image}
-          time={recipe.total_time}
-          category={recipe.category}
-          date={recipe.created_at}
+          image={recipe.recipeimage}
+          time={recipe.totaltime}
+          category={recipe.recipecategory}
+          date={recipe.recipecreatedat}
+          likes={recipe.likes}
+          authorName={recipe.recipeauthorname}
           showButton={props.showButton}
         />
       ))}
