@@ -146,7 +146,7 @@ func LikeRecipe() gin.HandlerFunc {
 		}
 
 		// Update the recipe's likes
-		if _, err := recipeCollection.UpdateOne(context.Background(), bson.M{"_id": id}, bson.M{"$inc": bson.M{"likes": 1}}); err != nil {
+		if _, err := recipeCollection.UpdateOne(context.Background(), bson.M{"_id": id}, bson.M{"$inc": bson.M{"Likes": 1}}); err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
