@@ -72,11 +72,11 @@ const ProfileNavBar = () => {
   const renderList = () => {
     switch (listType) {
       case "my-recipes":
-        return <RecipeList recipes={FAKE_RECIPES} />;
+        return <RecipeList recipes={FAKE_RECIPES} showButton={true} />;
       case "saved-recipes":
-        return <RecipeList recipes={FAKE_RECIPES} />;
+        return <RecipeList recipes={FAKE_RECIPES} showButton={false} />;
       default:
-        return <RecipeList recipes={FAKE_RECIPES} />;
+        return <RecipeList recipes={FAKE_RECIPES} showButton={true} />;
     }
   };
 
