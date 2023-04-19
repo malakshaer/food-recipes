@@ -1,32 +1,53 @@
 import { useState } from "react";
 import classes from "./EditAccount.module.css";
+import axios from "axios";
 
 const EditAccount = () => {
   const [userName, setUserName] = useState();
-  const [email, setEmail] = useState();
   const [profileImage, setProfileImage] = useState();
-  const [bio, setBio] = useState();
+  const [profileBio, setProfileBio] = useState();
   const [password, setPassword] = useState();
   const [confirmPassword, setConfirmPassword] = useState();
-  const [error, setError] = useState();
+  const [errorMessage, setErrorMessage] = useState();
+  const [successMessage, setSuccessMessage] = useState();
 
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
+    if (password != confirmPassword) {
+      setErrorMessage("Passwords do not match");
+      return;
+    }
 
-    let UserData = {
-      userName,
-      email,
-      profileImage,
-      bio,
-      password,
-      confirmPassword,
+    let userData = {
+      username: userName,
+      profileimage: profileImage,
+      profilebio: profileBio,
+      password: password,
+      confirmpassword: confirmPassword,
     };
 
     if (profileImage) {
-      UserData = { ...UserData, profileImage };
+      userData = { ...userData, profileimage: profileImage };
     }
 
-    console.log(UserData);
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios({
+        method: "put",
+        url: `${process.env.API_ENDPOINT}user`,
+        data: userData,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setSuccessMessage("Updated successfully");
+      setErrorMessage(null);
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+      setSuccessMessage(null);
+      setErrorMessage(error.response.data.error || "An error occurred");
+    }
   };
 
   return (
@@ -36,50 +57,43 @@ const EditAccount = () => {
           <label htmlFor="name">User Name:</label>
           <input
             type="text"
-            required
             id="name"
+            value={userName}
             onChange={(e) => setUserName(e.target.value)}
           />
         </div>
         <div className={classes.control}>
-          <label htmlFor="image">Profile Image:</label>
+          <label htmlFor="profileImage">Profile Image:</label>
           <input
             type="file"
-            id="image"
+            name="profileImage"
+            id="profileImage"
             onChange={(e) => {
               const file = e.target.files[0];
               const reader = new FileReader();
               reader.readAsDataURL(file);
-              reader.onload = () => {
-                setProfileImage(reader.result);
-              };
+              reader.addEventListener("load", () => {
+                const base64String = reader.result.split(",")[1];
+                setProfileImage(base64String);
+              });
             }}
-          />
-        </div>
-        <div className={classes.control}>
-          <label htmlFor="email">Email:</label>
-          <input
-            type="text"
-            required
-            id="email"
-            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div className={classes.control}>
           <label htmlFor="bio">Bio:</label>
           <textarea
             type="text"
-            required
             id="bio"
-            onChange={(e) => setBio(e.target.value)}
+            value={profileBio}
+            onChange={(e) => setProfileBio(e.target.value)}
           />
         </div>
         <div className={classes.control}>
           <label htmlFor="password">Password:</label>
           <input
             type="password"
-            required
             id="password"
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
@@ -88,15 +102,16 @@ const EditAccount = () => {
           <input
             id="confirmPassword"
             type="password"
-            required
             rows="5"
+            value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-          ></input>
+          />
         </div>
-
         <div className={classes.actions}>
-          <button>Update</button>
+          <button type="submit">Save Changes</button>
         </div>
+        {errorMessage && <p className={classes.error}>{errorMessage}</p>}
+        {successMessage && <p className={classes.success}>{successMessage}</p>}
       </form>
     </div>
   );
