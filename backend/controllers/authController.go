@@ -122,7 +122,7 @@ func Login() gin.HandlerFunc {
 		}
 
 		// Generate a JWT token for the user
-		token, err := utils.GenerateToken(user)
+		token, err := utils.GenerateToken(userFound)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
