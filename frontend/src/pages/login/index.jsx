@@ -1,13 +1,15 @@
 import classes from "./Login.module.css";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import Link from "next/link";
 import axios from "axios";
-import { useRouter } from "next/router";
 
-const Login = () => {
+const Login = (token) => {
   const router = useRouter();
+
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
 
@@ -34,6 +36,7 @@ const Login = () => {
       localStorage.setItem("token", response.data.token);
       router.push("/home");
     } catch (error) {
+      console.error("There was an error:", error);
       setErrorMessage(error.response.data.error || "An error occurred");
     }
 
@@ -42,8 +45,7 @@ const Login = () => {
 
   return (
     <form className={classes.form} onSubmit={handleSubmit}>
-      <h3>Sign in to continue</h3>
-
+      <h3>Sign In</h3>
       <div className={classes.input}>
         <input
           type="email"
@@ -69,12 +71,25 @@ const Login = () => {
         <button>Login</button>
         <div>
           <p>
-            Already have an account <Link href="/register">Register</Link>
+            Don't have an account? <Link href="/register">Register</Link>
           </p>
         </div>
       </div>
     </form>
   );
 };
+
+// export async function getServerSideProps(data) {
+//   const response = await axios.post(`${process.env.API_ENDPOINT}login`, data);
+//   const responseData = JSON.stringify(response.data);
+//   const parsedData = JSON.parse(responseData);
+//   const token = parsedData.token;
+
+//   return {
+//     props: {
+//       token,
+//     },
+//   };
+// }
 
 export default Login;
