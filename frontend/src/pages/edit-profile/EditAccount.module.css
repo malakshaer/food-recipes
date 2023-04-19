@@ -74,3 +74,15 @@
     background-color: #a50e48;
     border-color: #a50e48;
 }
+
+.error {
+    color: red;
+    font-weight: bold;
+    margin-top: 0.5rem;
+}
+
+.success {
+    color: green;
+    font-weight: bold;
+    margin-top: 0.5rem;
+}
