@@ -15,6 +15,8 @@ func main() {
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:3000"}
 	config.AllowHeaders = []string{"Authorization", "Content-Type"}
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	config.AllowCredentials = true
 	router.Use(cors.New(config))
 
 	router.Use(gin.Logger())
