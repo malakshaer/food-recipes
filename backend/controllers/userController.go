@@ -6,6 +6,7 @@ import (
 	"golang-food-recipes/models"
 	"golang-food-recipes/utils"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -65,13 +66,19 @@ func UpdateUser() gin.HandlerFunc {
 		}
 		// Update profile image if provided
 		if input.ProfileImage != "" {
-			Image, err := base64.StdEncoding.DecodeString(input.ProfileImage)
+			// Remove the data url prefix
+			encodedImage := strings.Replace(input.ProfileImage, "data:image/png;base64,", "", 1)
+			// Decode the base64 image
+			decodedImage, err := base64.StdEncoding.DecodeString(encodedImage)
 			if err != nil {
-				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Something went wrong"})
+				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
-			dbUser.ProfileImage = string(Image)
+			// Convert the decoded image to a base64 string
+			base64Image := base64.StdEncoding.EncodeToString(decodedImage)
+			dbUser.ProfileImage = base64Image
 		}
+
 		// Update profile bio if provided
 		if input.ProfileBio != "" {
 			dbUser.ProfileBio = input.ProfileBio

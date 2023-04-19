@@ -2,9 +2,11 @@ package controller
 
 import (
 	"context"
+	"encoding/base64"
 	"golang-food-recipes/database"
 	"golang-food-recipes/models"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +30,20 @@ func CreateRecipe() gin.HandlerFunc {
 		if err := c.ShouldBindJSON(&input); err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
 			return
+		}
+		// Update recipe image if provided
+		if input.RecipeImage != "" {
+			// Remove the data url prefix
+			encodedImage := strings.Replace(input.RecipeImage, "data:image/png;base64,", "", 1)
+			// Decode the base64 image
+			decodedImage, err := base64.StdEncoding.DecodeString(encodedImage)
+			if err != nil {
+				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+			// Convert the decoded image to a base64 string
+			base64Image := base64.StdEncoding.EncodeToString(decodedImage)
+			input.RecipeImage = base64Image
 		}
 		// Create the recipe object
 		recipe := models.Recipe{
