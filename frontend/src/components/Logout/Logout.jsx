@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import classes from "./Logout.module.css";
+import axios from "axios";
 
 const Logout = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -8,11 +9,10 @@ const Logout = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/logout", {
-        method: "POST",
-        credentials: "include",
-      });
+      const response = await axios.post(`${process.env.API_ENDPOINT}logout`);
+      console.log(response);
 
+      localStorage.removeItem("token");
       router.push("/login");
     } catch (error) {
       console.error("Logout error:", error);
