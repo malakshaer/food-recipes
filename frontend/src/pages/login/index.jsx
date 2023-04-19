@@ -79,17 +79,4 @@ const Login = (token) => {
   );
 };
 
-// export async function getServerSideProps(data) {
-//   const response = await axios.post(`${process.env.API_ENDPOINT}login`, data);
-//   const responseData = JSON.stringify(response.data);
-//   const parsedData = JSON.parse(responseData);
-//   const token = parsedData.token;
-
-//   return {
-//     props: {
-//       token,
-//     },
-//   };
-// }
-
 export default Login;
