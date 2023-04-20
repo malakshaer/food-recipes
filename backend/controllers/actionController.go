@@ -41,13 +41,16 @@ func SaveRecipe() gin.HandlerFunc {
 		var saved models.SavedRecipes
 		saved.ID = primitive.NewObjectID()
 		saved.RecipeID = id
-		saved.UserID = user.(models.User).ID
+		saved.RecipeAuthorID = user.(models.User).ID
 		saved.Name = recipe.Name
 		saved.Ingredients = recipe.Ingredients
 		saved.Instructions = recipe.Instructions
 		saved.TotalTime = recipe.TotalTime
 		saved.Category = recipe.RecipeCategory
 		saved.RecipeImage = recipe.RecipeImage
+		saved.RecipeAuthorName = user.(models.User).Username
+		saved.RecipeAuthorImage = user.(models.User).ProfileImage
+		saved.RecipeAuthorBio = user.(models.User).ProfileBio
 
 		// Update the user's saved recipes
 		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, bson.M{"$push": bson.M{"savedrecipes": saved}}); err != nil {
