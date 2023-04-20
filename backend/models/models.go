@@ -41,15 +41,18 @@ type Ingredients struct {
 }
 
 type SavedRecipes struct {
-	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	RecipeID     primitive.ObjectID `bson:"RecipeID,omitempty" json:"recipeid,omitempty"`
-	UserID       primitive.ObjectID `bson:"UserID,omitempty" json:"userid,omitempty"`
-	Name         string             `bson:"Name,omitempty" json:"name,omitempty"`
-	Ingredients  []Ingredients      `bson:"Ingredients,omitempty" json:"ingredients,omitempty"`
-	Instructions string             `bson:"Instructions,omitempty" json:"instructions,omitempty"`
-	TotalTime    string             `bson:"TotalTime,omitempty" json:"totaltime,omitempty"`
-	Category     string             `bson:"Category,omitempty" json:"category,omitempty"`
-	RecipeImage  string             `bson:"RecipeImage,omitempty" json:"recipeimage,omitempty"`
+	ID                primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	RecipeID          primitive.ObjectID `bson:"RecipeID,omitempty" json:"recipeid,omitempty"`
+	RecipeAuthorID    primitive.ObjectID `bson:"RecipeAuthorID,omitempty" json:"recipeauthorid,omitempty"`
+	Name              string             `bson:"Name,omitempty" json:"name,omitempty"`
+	Ingredients       []Ingredients      `bson:"Ingredients,omitempty" json:"ingredients,omitempty"`
+	Instructions      string             `bson:"Instructions,omitempty" json:"instructions,omitempty"`
+	TotalTime         string             `bson:"TotalTime,omitempty" json:"totaltime,omitempty"`
+	Category          string             `bson:"Category,omitempty" json:"category,omitempty"`
+	RecipeImage       string             `bson:"RecipeImage,omitempty" json:"recipeimage,omitempty"`
+	RecipeAuthorName  string             `bson:"RecipeAuthorName,omitempty" json:"recipeauthorname,omitempty"`
+	RecipeAuthorImage string             `bson:"RecipeAuthorImage,omitempty" json:"recipeauthorimage,omitempty"`
+	RecipeAuthorBio   string             `bson:"RecipeAuthorBio,omitempty" json:"recipeauthorbio,omitempty"`
 }
 
 type LikedRecipes struct {
