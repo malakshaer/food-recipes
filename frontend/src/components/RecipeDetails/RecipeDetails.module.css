@@ -57,30 +57,6 @@
     flex-grow: 1;
 }
 
-.userInfoButton button {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    font-weight: bold;
-    text-align: center;
-    text-decoration: none;
-    color: #ffffff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 0.25rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-}
-
-.userInfoButton button:hover {
-    background-color: #0069d9;
-}
-
-.userInfoButton button:active {
-    background-color: #005cbf;
-    box-shadow: none;
-}
-
 .container {
     display: flex;
     flex-direction: row;
@@ -101,9 +77,8 @@
   
 .header {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;    
+    flex-direction: column;    
+    align-items: flex-start;   
 }
 
 .header h1 {
