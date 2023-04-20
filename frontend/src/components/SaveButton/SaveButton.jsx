@@ -2,10 +2,11 @@ import { useState } from "react";
 import { FaSave } from "react-icons/fa";
 import classes from "./SaveButton.module.css";
 
-const SaveButton = () => {
-  const [saved, setSaved] = useState(false);
+const SaveButton = (props) => {
+  const [saved, setSaved] = useState(props.saved || false);
 
-  const handleToggle = () => {
+  const handleSave = async () => {
+    await props.onClick();
     setSaved(!saved);
   };
 
@@ -14,7 +15,7 @@ const SaveButton = () => {
       <FaSave
         className={classes.saveIcon}
         color={saved ? "purple" : "gray"}
-        onClick={handleToggle}
+        onClick={handleSave}
       />
     </div>
   );
