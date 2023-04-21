@@ -16,8 +16,8 @@ const RecipeItem = (props) => {
     router.push(`/recipe-details/${props.id}`);
   };
 
-  const handleEditRecipe = () => {
-    router.push(`/edit-recipe/${props.id}`);
+  const handleEditRecipe = (id) => {
+    router.push(`/edit-recipe/${id}`);
   };
 
   const handleCardClick = (event) => {
@@ -71,7 +71,7 @@ const RecipeItem = (props) => {
         <div className={classes.actions}>
           {props.showButton && (
             <div className={classes.buttonWrapper}>
-              <button onClick={handleEditRecipe}>
+              <button onClick={() => handleEditRecipe(props.id)}>
                 <FaEdit />
                 Edit Recipe
               </button>
