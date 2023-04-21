@@ -130,7 +130,7 @@ func UpdateRecipeById() gin.HandlerFunc {
 		// Get the recipe id from the request
 		id, err := primitive.ObjectIDFromHex(c.Param("id"))
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Fail to get recipe id"})
 			return
 		}
 
@@ -144,7 +144,7 @@ func UpdateRecipeById() gin.HandlerFunc {
 		// Get the updated recipe details from the request
 		var input models.Recipe
 		if err := c.BindJSON(&input); err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
 			return
 		}
 
@@ -160,35 +160,52 @@ func UpdateRecipeById() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			return
 		}
-
 		// Update the recipe in the database
 		update := bson.M{
-			"$set": bson.M{
-				"Name":            input.Name,
-				"Ingredients":     input.Ingredients,
-				"Instructions":    input.Instructions,
-				"TotalTime":       input.TotalTime,
-				"RecipeCategory":  input.RecipeCategory,
-				"RecipeImage":     input.RecipeImage,
+			"$set": map[string]interface{}{
 				"RecipeUpdatedAt": time.Now().Format(time.RFC3339),
 			},
 		}
+		if input.Name != "" {
+			update["$set"].(map[string]interface{})["Name"] = input.Name
+			recipe.Name = input.Name
+		}
+		if input.Instructions != "" {
+			update["$set"].(map[string]interface{})["Instructions"] = input.Instructions
+			recipe.Instructions = input.Instructions
+		}
+		if input.Ingredients != nil {
+			update["$set"].(map[string]interface{})["Ingredients"] = input.Ingredients
+			recipe.Ingredients = input.Ingredients
+		}
+		if input.TotalTime != "" {
+			update["$set"].(map[string]interface{})["TotalTime"] = input.TotalTime
+			recipe.TotalTime = input.TotalTime
+		}
+		if input.RecipeCategory != "" {
+			update["$set"].(map[string]interface{})["RecipeCategory"] = input.RecipeCategory
+			recipe.RecipeCategory = input.RecipeCategory
+		}
+		if input.RecipeImage != "" {
+			update["$set"].(map[string]interface{})["RecipeImage"] = input.RecipeImage
+			recipe.RecipeImage = input.RecipeImage
+		}
 
 		if _, err := recipeCollection.UpdateOne(context.Background(), bson.M{"_id": id}, update); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Fail to update recipe in the database"})
 			return
 		}
 
 		// Get the updated recipe from the database
 		if err := recipeCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&recipe); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Fail to get updated recipe from database"})
 			return
 		}
 
 		// Get the user from the database
 		var dbUser models.User
 		if err := userCollection.FindOne(context.Background(), bson.M{"_id": user.(models.User).ID}).Decode(&dbUser); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Fail to get user from database"})
 			return
 		}
 
@@ -202,7 +219,7 @@ func UpdateRecipeById() gin.HandlerFunc {
 
 		// Update the user in the database
 		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, bson.M{"$set": bson.M{"recipes": dbUser.Recipes}}); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Fail to update user in the database"})
 			return
 		}
 
