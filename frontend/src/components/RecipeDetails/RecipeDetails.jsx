@@ -57,6 +57,16 @@ const RecipeDetails = (props) => {
       console.log(error);
     }
   };
+  const createdDate = new Date(recipe.recipecreatedat);
+  const formattedDate = createdDate.toLocaleString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    // second: "numeric",
+    // timeZoneName: "short",
+  });
 
   return (
     <div className={classes.card}>
@@ -79,7 +89,7 @@ const RecipeDetails = (props) => {
             <h1>{recipe.name}</h1>
             <span>Category: {recipe.recipecategory}</span>
             <span>Time needed: 🕐{recipe.totaltime} min</span>
-            <span>Date: {recipe.recipecreatedat}</span>
+            <span>Date: {formattedDate}</span>
             <div className={classes.actions}>
               <SaveButton saved={props.saved} onClick={handleSave} />
               <LikeButton />
@@ -90,8 +100,8 @@ const RecipeDetails = (props) => {
             <Image
               src={`data:image/*;base64,${recipe.recipeimage}`}
               alt="recipe-image"
-              width={400}
-              height={400}
+              width={300}
+              height={250}
             />
           </div>
         </div>
