@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { FaSave } from "react-icons/fa";
+import { FaBookmark } from "react-icons/fa";
 import classes from "./SaveButton.module.css";
 
 const SaveButton = (props) => {
-  const [saved, setSaved] = useState(props.saved || false);
+  const [saved, setSaved] = useState(false);
 
   const handleSave = async () => {
     await props.onClick();
@@ -12,7 +12,7 @@ const SaveButton = (props) => {
 
   return (
     <div className={classes.container}>
-      <FaSave
+      <FaBookmark
         className={classes.saveIcon}
         color={saved ? "purple" : "gray"}
         onClick={handleSave}
