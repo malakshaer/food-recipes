@@ -1,83 +1,109 @@
-import { useRef } from "react";
+import { useState } from "react";
 import classes from "./EditRecipe.module.css";
+import axios from "axios";
+import { useRouter } from "next/router";
 
-const recipes = [
-  {
-    id: 1,
-    name: "Spaghetti",
-    ingredients: [
-      { id: 1, text: "1/2 cup olive oil" },
-      { id: 2, text: "1 onion, chopped" },
-      { id: 3, text: "1 green bell pepper, chopped" },
-      { id: 4, text: "2 cloves garlic, chopped" },
-      { id: 5, text: "1 (28 ounce) can crushed tomatoes" },
-      { id: 6, text: "1 (6 ounce) can tomato paste" },
-      { id: 7, text: "1/2 cup water" },
-    ],
-    instructions:
-      "Heat oil in a large pot over medium heat. Cook and stir onion, green bell pepper, and garlic in the hot oil until onion has softened and turned translucent, about 5 minutes. Stir crushed tomatoes, tomato paste, and water into the onion mixture; season with salt and pepper. Bring sauce to a boil, reduce heat to medium-low, and simmer until flavors have blended, about 30 minutes.",
-    image: "",
-    total_time: "10min",
-    category: "meal",
-    created_at: "1/1/2023",
-  },
-];
-const EditRecipe = (props) => {
-  const recipe = props.recipes
-    ? props.recipes.find((recipe) => recipe.id === props.id)
-    : null;
+const EditRecipe = () => {
+  const router = useRouter();
+  const { id } = router.query;
+  const [name, setName] = useState();
+  const [image, setImage] = useState(null);
+  const [instructions, setInstructions] = useState("");
+  const [ingredients, setIngredients] = useState([]);
+  const [category, setCategory] = useState("");
+  const [totalTime, setTotalTime] = useState(0);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const nameInputRef = useRef();
-  const imageInputRef = useRef();
-  const instructionsInputRef = useRef();
-  const ingredientsInputRef = useRef();
-  const categoryInputRef = useRef();
-  const totalTimeInputRef = useRef();
-
-  const nameDefaultValue = recipe ? recipe.name : "";
-  const imageDefaultValue = recipe ? recipe.image : "";
-  const categoryDefaultValue = recipe ? recipe.category : "";
-  const totalTimeDefaultValue = recipe ? recipe.total_time : "";
-  const ingredientsDefaultValue = recipe ? recipe.ingredients.join("; ") : "";
-
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
+    const token = localStorage.getItem("token");
 
-    const recipeData = {
-      name: enteredName,
-      image: enteredImage,
-      instructions: enteredInstructions,
-      ingredients: ingredients,
-      category: enteredCategory,
-      total_time: enteredTotalTime,
+    let recipeData = {
+      name: name,
+      instructions: instructions,
+      ingredients: ingredients.split(";").map((ingredient, index) => ({
+        id: String(index + 1),
+        text: ingredient.trim(),
+      })),
+      recipecategory: category,
+      totaltime: String(totalTime),
     };
 
-    props.onEditRecipe(props.id, recipeData);
+    if (image) {
+      recipeData = { ...recipeData, recipeimage: image };
+    }
+
+    try {
+      const response = await axios.put(
+        `${process.env.API_ENDPOINT}recipe/${id}`,
+        recipeData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response);
+      setSuccessMessage("Recipe updated successfully");
+      setErrorMessage(null);
+    } catch (error) {
+      console.log(error);
+      setErrorMessage(error.response.data.error || "An error occurred");
+      setSuccessMessage(null);
+    }
+  };
+  const deleteRecipe = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.delete(
+        `${process.env.API_ENDPOINT}recipe/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(response);
+      setSuccessMessage("Recipe deleted successfully");
+      setErrorMessage(null);
+    } catch (error) {
+      console.log(error);
+      setErrorMessage(error.response.data.error || "An error occurred");
+      setSuccessMessage(null);
+    }
   };
 
   return (
     <div className={classes.card}>
       <h2>Edit Recipe</h2>
-      <form className={classes.form} onSubmit={submitHandler}>
+      <form className={classes.form}>
         <div>
           <div className={classes.control}>
             <label htmlFor="name">Recipe Name:</label>
             <input
               type="text"
-              required
               id="name"
-              defaultValue={nameDefaultValue}
-              ref={nameInputRef}
+              value={name}
+              onChange={(event) => setName(event.target.value)}
             />
           </div>
           <div className={classes.control}>
             <label htmlFor="image">Recipe Image:</label>
             <input
               type="file"
-              required
               id="image"
-              ref={imageInputRef}
-              defaultValue={imageDefaultValue}
+              onChange={(e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.addEventListener("load", () => {
+                  const base64String = reader.result.split(",")[1];
+                  setImage(base64String);
+                });
+              }}
             />
           </div>
           <div className={classes.control}>
@@ -85,9 +111,8 @@ const EditRecipe = (props) => {
             <select
               className={classes.category}
               id="category"
-              required
-              ref={categoryInputRef}
-              defaultValue={categoryDefaultValue}
+              value={category}
+              onChange={(event) => setCategory(event.target.value)}
             >
               <option value="">Select Category</option>
               <option value="salads">Salads</option>
@@ -104,11 +129,10 @@ const EditRecipe = (props) => {
             <label htmlFor="totalTime">Total Time:</label>
             <input
               type="number"
-              required
               id="totalTime"
-              defaultValue={totalTimeDefaultValue}
-              ref={totalTimeInputRef}
               min="0"
+              value={totalTime}
+              onChange={(event) => setTotalTime(event.target.value)}
             />
           </div>
         </div>
@@ -117,32 +141,34 @@ const EditRecipe = (props) => {
             <label htmlFor="ingredients">Ingredients:</label>
             <textarea
               id="ingredients"
-              required
               rows="5"
-              ref={ingredientsInputRef}
-              defaultValue={ingredientsDefaultValue}
               placeholder="Insert (;) after each ingredients"
+              value={ingredients}
+              onChange={(event) => setIngredients(event.target.value)}
             ></textarea>
           </div>
           <div className={classes.control}>
             <label htmlFor="instructions">Instructions:</label>
             <textarea
               id="instructions"
-              required
               rows="10"
-              ref={instructionsInputRef}
-              defaultValue={ingredientsDefaultValue}
+              value={instructions}
+              onChange={(event) => setInstructions(event.target.value)}
             ></textarea>
           </div>
         </div>
         <div className={classes.buttons}>
           <div className={classes.actions_delete}>
-            <button>Delete Recipe</button>
+            <button onClick={deleteRecipe}>Delete Recipe</button>
           </div>
           <div className={classes.actions}>
-            <button>Update Recipe</button>
+            <button onClick={submitHandler}>Update Recipe</button>
           </div>
         </div>
+        {errorMessage && <div className={classes.error}>{errorMessage}</div>}
+        {successMessage && (
+          <div className={classes.success}>{successMessage}</div>
+        )}
       </form>
     </div>
   );
