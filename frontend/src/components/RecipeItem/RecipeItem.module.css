@@ -72,3 +72,9 @@
     font-size: 25px;
     color: grey;
 }
+
+.like_save {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
