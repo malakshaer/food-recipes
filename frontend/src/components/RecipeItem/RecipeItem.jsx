@@ -30,14 +30,45 @@ const RecipeItem = (props) => {
     }
   };
 
-  const handleAction = async () => {
+  const handleSave = async (id) => {
     const token = localStorage.getItem("token");
     try {
       const response = await axios({
         method: "post",
-        url: `${process.env.API_ENDPOINT}${
-          saved ? "unsave_recipe" : "save_recipe"
-        }/${props.id}`,
+        url: `${process.env.API_ENDPOINT}save_recipe/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response);
+      setSaved(!saved);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleLike = async (id) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios({
+        method: "post",
+        url: `${process.env.API_ENDPOINT}like_recipe/${id}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleUnSave = async (id) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios({
+        method: "post",
+        url: `${process.env.API_ENDPOINT}unsave_recipe/${id}`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -77,13 +108,28 @@ const RecipeItem = (props) => {
               </button>
             </div>
           )}
-          <div className={classes.buttonWrapper}>
-            <SaveButton onClick={handleAction} saved={saved} />
-          </div>
-          <div className={classes.buttonWrapper}>
-            <LikeButton />
-            <span>{props.likes}</span>
-          </div>
+          {props.showActionButton && (
+            <div className={classes.like_save}>
+              <div className={classes.buttonWrapper}>
+                <SaveButton onClick={() => handleSave(props.id)} />
+              </div>
+              <div className={classes.buttonWrapper}>
+                <LikeButton onClick={() => handleLike(props.id)} />
+                <span>{props.likes}</span>
+              </div>
+            </div>
+          )}
+          {props.showUnActionButton && (
+            <div className={classes.like_save}>
+              <div className={classes.buttonWrapper}>
+                <SaveButton onClick={() => handleUnSave(props.id)} />
+              </div>
+              <div className={classes.buttonWrapper}>
+                <LikeButton onClick={() => handleLike(props.id)} />
+                <span>{props.likes}</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
