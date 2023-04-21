@@ -29,6 +29,8 @@ const RecipeList = (props) => {
           recipeAuthorImage={recipe.recipeauthorimage}
           showButton={props.showButton}
           savedRecipe={savedRecipe}
+          showActionButton={props.showActionButton}
+          showUnActionButton={props.showUnActionButton}
         />
       ))}
     </ul>
