@@ -87,7 +87,12 @@ const RecipeDetails = (props) => {
             </div>
           </div>
           <div className={classes.image}>
-            <Image src={recipeImage} alt="recipe-image" />
+            <Image
+              src={`data:image/*;base64,${recipe.recipeimage}`}
+              alt="recipe-image"
+              width={400}
+              height={400}
+            />
           </div>
         </div>
         <div className={classes.content}>
