@@ -268,6 +268,11 @@ func DeleteRecipeById() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		// Remove the recipe from the saved list of all users saved the recipe
+		if _, err := userCollection.UpdateMany(context.Background(), bson.M{"savedRecipes": bson.M{"$elemMatch": bson.M{"_id": id}}}, bson.M{"$pull": bson.M{"savedRecipes": bson.M{"_id": id}}}); err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 
 		// Return success message
 		c.JSON(http.StatusOK, gin.H{"message": "Recipe deleted successfully"})
