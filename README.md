@@ -30,7 +30,7 @@
 
 <img src="./readme/title4.svg"/>
 
-Here's a brief high-level overview of the tech stack the Well app uses:
+Here's a brief overview of the tech stack this app uses:
 
 - Frontend: This project uses the [Next.js](https://nextjs.org/docs). Next.js is an open-source web development framework created by the private company Vercel providing React-based web applications with server-side rendering and static website generation.
 
