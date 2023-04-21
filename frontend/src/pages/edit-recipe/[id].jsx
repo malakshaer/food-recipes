@@ -22,10 +22,13 @@ const EditRecipe = () => {
     let recipeData = {
       name: name,
       instructions: instructions,
-      ingredients: ingredients.split(";").map((ingredient, index) => ({
-        id: String(index + 1),
-        text: ingredient.trim(),
-      })),
+      ingredients:
+        ingredients.length > 0
+          ? ingredients.split(";").map((ingredient, index) => ({
+              id: String(index + 1),
+              text: ingredient.trim(),
+            }))
+          : [],
       recipecategory: category,
       totaltime: String(totalTime),
     };
