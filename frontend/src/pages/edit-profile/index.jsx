@@ -53,6 +53,7 @@ const EditAccount = () => {
   return (
     <div className={classes.card}>
       <form className={classes.form} onSubmit={submitHandler}>
+        <h2 className={classes.title}>Edit your account</h2>
         <div className={classes.control}>
           <label htmlFor="name">User Name:</label>
           <input
