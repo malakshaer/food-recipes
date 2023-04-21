@@ -55,11 +55,29 @@ const ProfileNavBar = () => {
   const renderList = () => {
     switch (listType) {
       case "my-recipes":
-        return <RecipeList recipes={recipes} showButton={true} />;
+        return (
+          <RecipeList
+            recipes={recipes}
+            showButton={true}
+            showActionButton={true}
+          />
+        );
       case "saved-recipes":
-        return <RecipeList recipes={savedRecipes} showButton={false} />;
+        return (
+          <RecipeList
+            recipes={savedRecipes}
+            showButton={false}
+            showUnActionButton={true}
+          />
+        );
       default:
-        return <RecipeList recipes={recipes} showButton={true} />;
+        return (
+          <RecipeList
+            recipes={recipes}
+            showButton={true}
+            showActionButton={true}
+          />
+        );
     }
   };
 
