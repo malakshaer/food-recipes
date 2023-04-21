@@ -10,6 +10,14 @@
 .form {
     padding: 1rem;
 }
+
+.title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #a50e48;
+    text-align: center;
+}
   
 .control {
     margin-bottom: 0.5rem;
