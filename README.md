@@ -76,37 +76,37 @@ Here's a brief high-level overview of the tech stack the Well app uses:
 
 ## Frontend Installation (Next.js)
 
-1.Clone the repository
+1. Clone the repository
 
 ```sh
-git clone https://github.com/your-username/food-recipes.git
+git clone https://github.com/malakshaer/food-recipes.git
 ```
 
-2.Navigate to the frontend directory and install the dependencies.
+2. Navigate to the frontend directory and install the dependencies.
 
 ```sh
 cd frontend
 npm install
 ```
 
-3.Start the development server.
+3. Start the development server.
 
 ```sh
 npm run dev
 ```
 
-4.Open your browser and navigate to http://localhost:3000 to access the Food Recipes web application.
+4. Open your browser and navigate to http://localhost:3000 to access the Food Recipes web application.
 
 ## Backend Installation (Gin)
 
-1.Navigate to the backend directory and install the dependencies.
+1. Navigate to the backend directory and install the dependencies.
 
 ```sh
 cd ../backend
 go mod download
 ```
 
-2.Start the server
+2. Start the server
 
 ```sh
 go run main.go
@@ -114,22 +114,22 @@ go run main.go
 
 ## Database Installation (MongoDB)
 
-1.Download and install MongoDB from the [official website]()
+1. Download and install MongoDB from the [official website]()
 
-2.Start the MongoDB server
+2. Start the MongoDB server
 
 ```sh
 mongod
 ```
 
-3.Create a new database called food-recipes
+3. Create a new database called food-recipes
 
 ```sh
 mongo
 > use food-recipes
 ```
 
-4.Create collections for the database.
+4. Create collections for the database.
 
 ```sh
 mongo
@@ -137,7 +137,7 @@ mongo
 > db.createCollection("users")
 ```
 
-5.Restart the backend server.
+5. Restart the backend server.
 
 ```sh
 go run main.go
