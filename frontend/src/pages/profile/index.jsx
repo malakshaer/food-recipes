@@ -32,7 +32,7 @@ const Profile = () => {
         });
         const user = response.data.data;
         setUser(user);
-        console.log(user);
+        // console.log(user);
       } catch (error) {
         console.log(error);
       }
@@ -48,6 +48,8 @@ const Profile = () => {
             <img
               src={`data:image/*;base64,${user.profileimage}`}
               alt="profile"
+              width={150}
+              height={150}
             />
           </div>
         </div>
