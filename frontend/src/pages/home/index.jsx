@@ -66,9 +66,17 @@ const HomePage = () => {
         </button>
       </form>
       {result > 0 ? (
-        <RecipeList recipes={search} showButton={false} />
+        <RecipeList
+          recipes={search}
+          showButton={false}
+          showActionButton={true}
+        />
       ) : (
-        <RecipeList recipes={recipes} showButton={false} />
+        <RecipeList
+          recipes={recipes}
+          showButton={false}
+          showActionButton={true}
+        />
       )}
     </Fragment>
   );
