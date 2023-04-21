@@ -83,7 +83,12 @@ const RecipeItem = (props) => {
   return (
     <div className={classes.card} onClick={handleCardClick}>
       <div className={classes.image}>
-        <Image src={recipeImage} alt="recipe-image" />
+        <Image
+          src={`data:image/*;base64,${props.image}`}
+          alt="recipe-image"
+          width={300}
+          height={250}
+        />
       </div>
       <div className={classes.content}>
         <div className={classes.time}>
