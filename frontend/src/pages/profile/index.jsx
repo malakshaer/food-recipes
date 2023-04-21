@@ -6,6 +6,7 @@ import axios from "axios";
 import ProfileNavBar from "../../components/ProfileNavBar/ProfileNavBar";
 import classes from "./Profile.module.css";
 import { useEffect, useState } from "react";
+import profileImage from "../../../public/profileImage.png";
 
 const Profile = () => {
   const router = useRouter();
