@@ -140,7 +140,6 @@ func LikeRecipe() gin.HandlerFunc {
 		var liked models.LikedRecipes
 		liked.ID = primitive.NewObjectID()
 		liked.RecipeID = id
-		liked.UserID = user.(models.User).ID
 
 		// Update the user's liked recipes
 		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, bson.M{"$push": bson.M{"likedrecipes": liked}}); err != nil {
@@ -149,7 +148,7 @@ func LikeRecipe() gin.HandlerFunc {
 		}
 
 		// Update the recipe's likes
-		if _, err := recipeCollection.UpdateOne(context.Background(), bson.M{"_id": id}, bson.M{"$inc": bson.M{"Likes": 1}}); err != nil {
+		if _, err := recipeCollection.UpdateOne(context.Background(), bson.M{"_id": id}, bson.M{"$inc": bson.M{"likes": 1}}); err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
