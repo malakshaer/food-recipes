@@ -87,7 +87,7 @@ func CreateRecipe() gin.HandlerFunc {
 			return
 		}
 		// Return the recipe
-		c.JSON(http.StatusOK, gin.H{"recipe": recipe})
+		c.JSON(http.StatusCreated, gin.H{"recipe": recipe})
 	}
 }
 
