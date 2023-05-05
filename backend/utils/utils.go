@@ -108,3 +108,18 @@ func GenerateIngredientIDs(ingredients []models.Ingredients) []models.Ingredient
 	}
 	return result
 }
+
+// Create VerifyPassword function that check if old password entered by the user is same as password from database
+func VerifyPassword(hashedPassword string, password string) error {
+	// Compare the password with the hash
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
