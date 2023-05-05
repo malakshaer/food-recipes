@@ -50,20 +50,45 @@ func UpdateUser() gin.HandlerFunc {
 			}
 			dbUser.Email = input.Email
 		}
+		// current password must exists
+		if input.CurrentPassword == "" {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Please enter your current password"})
+			return
+		}
+		// Check if current password is correct
+		if input.CurrentPassword != "" {
+			// Check if current password matches the password in the database
+			if !utils.CheckPasswordHash(input.CurrentPassword, dbUser.Password) {
+				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Current password is incorrect"})
+				return
+			}
+		}
+
 		// Check if password and confirm password are equal
 		if input.Password != "" && input.ConfirmPassword != "" {
-			// Hash password
+			// Check if current password was entered
+			if input.CurrentPassword == "" {
+				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Please enter your current password"})
+				return
+			}
+
+			// Check if new password and confirm password match
+			if input.Password != input.ConfirmPassword {
+				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Password and confirm password do not match"})
+				return
+			}
+
+			// Hash new password
 			hashedPassword, err := utils.HashPassword(input.Password)
 			if err != nil {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return
 			}
-			if input.Password != input.ConfirmPassword {
-				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Password and confirm password do not match"})
-				return
-			}
+
+			// Update password in database
 			dbUser.Password = hashedPassword
 		}
+
 		// Update profile image if provided
 		if input.ProfileImage != "" {
 			// Remove the data url prefix
@@ -83,6 +108,20 @@ func UpdateUser() gin.HandlerFunc {
 		if input.ProfileBio != "" {
 			dbUser.ProfileBio = input.ProfileBio
 		}
+		// Store only username, password,bio and image of dbUser
+		dbUser = models.User{
+			ID:           dbUser.ID,
+			Username:     dbUser.Username,
+			Email:        dbUser.Email,
+			Password:     dbUser.Password,
+			ProfileBio:   dbUser.ProfileBio,
+			ProfileImage: dbUser.ProfileImage,
+			Token:        dbUser.Token,
+			Recipes:      dbUser.Recipes,
+			SavedRecipes: dbUser.SavedRecipes,
+			LikedRecipes: dbUser.LikedRecipes,
+		}
+
 		// Update the user in database
 		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, bson.M{"$set": dbUser}); err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
