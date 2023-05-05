@@ -66,8 +66,12 @@ func CreateRecipe() gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to store recipe in the database"})
 			return
 		}
+		var addedRecipe models.Recipe
+		addedRecipe.ID = recipe.ID
+		addedRecipe.Name = recipe.Name
+
 		// Add the recipe to the user's recipes list in the database
-		update := bson.M{"$push": bson.M{"recipes": recipe}}
+		update := bson.M{"$push": bson.M{"recipes": addedRecipe}}
 		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, update); err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user's recipes list in the database"})
 			return
