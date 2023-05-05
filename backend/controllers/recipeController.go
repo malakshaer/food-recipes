@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"golang-food-recipes/database"
 	"golang-food-recipes/models"
+	"golang-food-recipes/utils"
 	"net/http"
 	"strings"
 	"time"
@@ -49,7 +50,7 @@ func CreateRecipe() gin.HandlerFunc {
 		recipe := models.Recipe{
 			ID:                primitive.NewObjectID(),
 			Name:              input.Name,
-			Ingredients:       input.Ingredients,
+			Ingredients:       utils.GenerateIngredientIDs(input.Ingredients),
 			Instructions:      input.Instructions,
 			TotalTime:         input.TotalTime,
 			RecipeCategory:    input.RecipeCategory,
@@ -175,8 +176,18 @@ func UpdateRecipeById() gin.HandlerFunc {
 			recipe.Instructions = input.Instructions
 		}
 		if input.Ingredients != nil {
-			update["$set"].(map[string]interface{})["Ingredients"] = input.Ingredients
-			recipe.Ingredients = input.Ingredients
+			// Loop through the ingredients array and update the matching ingredient by ID
+			for _, ingredient := range input.Ingredients {
+				for j, recipeIngredient := range recipe.Ingredients {
+					if recipeIngredient.ID == ingredient.ID {
+						recipe.Ingredients[j].Text = ingredient.Text
+						break
+					}
+				}
+			}
+
+			// Set the updated ingredients array in the update map
+			update["$set"] = bson.M{"Ingredients": recipe.Ingredients}
 		}
 		if input.TotalTime != "" {
 			update["$set"].(map[string]interface{})["TotalTime"] = input.TotalTime
