@@ -46,6 +46,16 @@ func CreateRecipe() gin.HandlerFunc {
 			base64Image := base64.StdEncoding.EncodeToString(decodedImage)
 			input.RecipeImage = base64Image
 		}
+		// Check if name exists
+		if input.Name == "" {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Recipe name is required"})
+			return
+		}
+		// Check if ingredients exists
+		if input.Ingredients == nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Recipe ingredients are required"})
+			return
+		}
 		// Create the recipe object
 		recipe := models.Recipe{
 			ID:                primitive.NewObjectID(),
