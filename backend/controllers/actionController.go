@@ -15,7 +15,7 @@ func SaveRecipe() gin.HandlerFunc {
 		// Get the user details from the context
 		user, exists := c.Get("user")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve user details"})
 			return
 		}
 		// Get the recipe id from the request
@@ -27,7 +27,7 @@ func SaveRecipe() gin.HandlerFunc {
 		// Retrieve the recipe data from the database
 		var recipe models.Recipe
 		if err := recipeCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&recipe); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve recipe details"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve recipe details"})
 			return
 		}
 		// Check if recipe already exists in user's saved recipes
@@ -43,7 +43,7 @@ func SaveRecipe() gin.HandlerFunc {
 
 		// Update the user's saved recipes
 		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, bson.M{"$push": bson.M{"savedrecipes": saved}}); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{
@@ -57,7 +57,7 @@ func UnSaveRecipe() gin.HandlerFunc {
 		// Get the user details from the context
 		user, exists := c.Get("user")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve user details"})
 			return
 		}
 
@@ -84,7 +84,7 @@ func UnSaveRecipe() gin.HandlerFunc {
 
 		// Remove the recipe from the user's saved recipes
 		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, bson.M{"$pull": bson.M{"savedrecipes": bson.M{"RecipeID": id}}}); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -99,7 +99,7 @@ func LikeRecipe() gin.HandlerFunc {
 		// Get the user details from the context
 		user, exists := c.Get("user")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve user details"})
 			return
 		}
 
@@ -113,7 +113,7 @@ func LikeRecipe() gin.HandlerFunc {
 		// Retrieve the recipe data from the database
 		var recipe models.Recipe
 		if err := recipeCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&recipe); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve recipe details"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve recipe details"})
 			return
 		}
 
@@ -131,13 +131,13 @@ func LikeRecipe() gin.HandlerFunc {
 
 		// Update the user's liked recipes
 		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, bson.M{"$push": bson.M{"likedrecipes": liked}}); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		// Update the recipe's likes
 		if _, err := recipeCollection.UpdateOne(context.Background(), bson.M{"_id": id}, bson.M{"$inc": bson.M{"likes": 1}}); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -152,7 +152,7 @@ func UnLikeRecipe() gin.HandlerFunc {
 		// Get the user details from the context
 		user, exists := c.Get("user")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve user details"})
 			return
 		}
 
@@ -179,13 +179,13 @@ func UnLikeRecipe() gin.HandlerFunc {
 
 		// Remove the recipe from the user's liked recipes
 		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, bson.M{"$pull": bson.M{"likedrecipes": bson.M{"RecipeID": id}}}); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		// Update the recipe's likes
 		if _, err := recipeCollection.UpdateOne(context.Background(), bson.M{"_id": id}, bson.M{"$inc": bson.M{"likes": -1}}); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -201,7 +201,7 @@ func SearchRecipe() gin.HandlerFunc {
 		// Get the user details from the context
 		_, exists := c.Get("user")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve user details"})
 			return
 		}
 
@@ -218,12 +218,12 @@ func SearchRecipe() gin.HandlerFunc {
 		}})
 
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 		var categoryResults []models.Recipe
 		if err := cursor.All(context.Background(), &categoryResults); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 		results = append(results, categoryResults...)

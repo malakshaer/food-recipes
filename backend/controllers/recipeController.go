@@ -23,7 +23,7 @@ func CreateRecipe() gin.HandlerFunc {
 		// Get the user details from the context
 		user, exists := c.Get("user")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve user details"})
 			return
 		}
 		// Get recipe
@@ -73,7 +73,7 @@ func CreateRecipe() gin.HandlerFunc {
 		}
 		// Store the recipe in the database
 		if _, err := recipeCollection.InsertOne(context.Background(), recipe); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to store recipe in the database"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to store recipe in the database"})
 			return
 		}
 		var addedRecipe models.Recipe
@@ -83,7 +83,7 @@ func CreateRecipe() gin.HandlerFunc {
 		// Add the recipe to the user's recipes list in the database
 		update := bson.M{"$push": bson.M{"recipes": addedRecipe}}
 		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, update); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user's recipes list in the database"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to update user's recipes list in the database"})
 			return
 		}
 		// Return the recipe
@@ -97,20 +97,20 @@ func GetAllRecipes() gin.HandlerFunc {
 		var recipes []models.Recipe
 		cursor, err := recipeCollection.Find(context.Background(), bson.M{})
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 		defer cursor.Close(context.Background())
 		for cursor.Next(context.Background()) {
 			var recipe models.Recipe
 			if err := cursor.Decode(&recipe); err != nil {
-				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
 			recipes = append(recipes, recipe)
 		}
 		if err := cursor.Err(); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -131,7 +131,7 @@ func GetRecipeById() gin.HandlerFunc {
 		// Get the recipe from the database
 		var recipe models.Recipe
 		if err := recipeCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&recipe); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -152,7 +152,7 @@ func UpdateRecipeById() gin.HandlerFunc {
 		// Get the user details from the context
 		user, exists := c.Get("user")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve user details"})
 			return
 		}
 
@@ -217,20 +217,20 @@ func UpdateRecipeById() gin.HandlerFunc {
 		}
 
 		if _, err := recipeCollection.UpdateOne(context.Background(), bson.M{"_id": id}, update); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Fail to update recipe in the database"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Fail to update recipe in the database"})
 			return
 		}
 
 		// Get the updated recipe from the database
 		if err := recipeCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&recipe); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Fail to get updated recipe from database"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Fail to get updated recipe from database"})
 			return
 		}
 
 		// Get the user from the database
 		var dbUser models.User
 		if err := userCollection.FindOne(context.Background(), bson.M{"_id": user.(models.User).ID}).Decode(&dbUser); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Fail to get user from database"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Fail to get user from database"})
 			return
 		}
 
@@ -244,7 +244,7 @@ func UpdateRecipeById() gin.HandlerFunc {
 
 		// Update the user in the database
 		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, bson.M{"$set": bson.M{"recipes": dbUser.Recipes}}); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Fail to update user in the database"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Fail to update user in the database"})
 			return
 		}
 
@@ -265,7 +265,7 @@ func DeleteRecipeById() gin.HandlerFunc {
 		// Get the user details from the context
 		user, exists := c.Get("user")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve user details"})
 			return
 		}
 
@@ -284,18 +284,18 @@ func DeleteRecipeById() gin.HandlerFunc {
 
 		// Delete the recipe from the database
 		if _, err := recipeCollection.DeleteOne(context.Background(), bson.M{"_id": id}); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		// Remove the recipe from the user's list of recipes in the database
 		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, bson.M{"$pull": bson.M{"recipes": bson.M{"_id": id}}}); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 		// Remove the recipe from the saved list of all users saved the recipe
 		if _, err := userCollection.UpdateMany(context.Background(), bson.M{"savedRecipes": bson.M{"$elemMatch": bson.M{"_id": id}}}, bson.M{"$pull": bson.M{"savedRecipes": bson.M{"_id": id}}}); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 

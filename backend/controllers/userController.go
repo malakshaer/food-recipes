@@ -18,20 +18,20 @@ func UpdateUser() gin.HandlerFunc {
 		// Get the user details from the context
 		user, exists := c.Get("user")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve user details from context"})
 			return
 		}
 		// Get the user input
 		var input models.User
 		if err := c.BindJSON(&input); err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Fail to get user input"})
 			return
 		}
 		// Retrieve the user data from the database
 		var dbUser models.User
 		err := userCollection.FindOne(context.Background(), bson.M{"_id": user.(models.User).ID}).Decode(&dbUser)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve user details from database"})
 			return
 		}
 		// Check if username already exists
@@ -81,7 +81,7 @@ func UpdateUser() gin.HandlerFunc {
 			// Hash new password
 			hashedPassword, err := utils.HashPassword(input.Password)
 			if err != nil {
-				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
 
@@ -124,7 +124,7 @@ func UpdateUser() gin.HandlerFunc {
 
 		// Update the user in database
 		if _, err := userCollection.UpdateOne(context.Background(), bson.M{"_id": user.(models.User).ID}, bson.M{"$set": dbUser}); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Fail to update user to database"})
 			return
 		}
 		// Return the updated user
@@ -137,14 +137,14 @@ func GetUserProfile() gin.HandlerFunc {
 		// Get the user details from the context
 		user, exists := c.Get("user")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve user details"})
 			return
 		}
 		// Retrieve the user data from the database
 		var dbUser models.User
 		err := userCollection.FindOne(context.Background(), bson.M{"_id": user.(models.User).ID}).Decode(&dbUser)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve user details"})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"data": dbUser})
@@ -156,7 +156,7 @@ func GetAllUsers() gin.HandlerFunc {
 		// Retrieve all users from the database
 		cursor, err := userCollection.Find(context.Background(), bson.M{})
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 		defer cursor.Close(context.Background())
@@ -181,7 +181,7 @@ func GetUserById() gin.HandlerFunc {
 		// Retrieve the user data from the database
 		var dbUser models.User
 		if err := userCollection.FindOne(context.Background(), bson.M{"_id": id}).Decode(&dbUser); err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve user details"})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"data": dbUser})

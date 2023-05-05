@@ -82,7 +82,7 @@ func Register() gin.HandlerFunc {
 		}
 
 		// Return success response with user ID and JWT token
-		c.JSON(http.StatusOK, gin.H{
+		c.JSON(http.StatusCreated, gin.H{
 			"message": fmt.Sprintf("%s's account created successfully", user.Username),
 			"token":   token,
 		})
