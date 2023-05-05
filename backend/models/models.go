@@ -9,7 +9,8 @@ type User struct {
 	Username        string             `json:"username,omitempty" json:"UserName,omitempty"`
 	Email           string             `json:"email,omitempty" json:"Email,omitempty"`
 	Password        string             `json:"password"`
-	ConfirmPassword string             `json:"confirm_password"`
+	ConfirmPassword string             `json:"confirm_password" bson:"confirm_password,omitempty"`
+	CurrentPassword string             `json:"current_password" bson:"current_password,omitempty"`
 	ProfileImage    string             `json:"profileimage,omitempty" json:"ProfileImage,omitempty"`
 	ProfileBio      string             `json:"profilebio,omitempty" json:"ProfileBio,omitempty"`
 	Token           string             `json:"token"`
