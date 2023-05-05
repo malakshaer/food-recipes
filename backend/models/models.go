@@ -36,8 +36,8 @@ type Recipe struct {
 }
 
 type Ingredients struct {
-	ID   string `bson:"IngredientID,omitempty" json:"ingredientid,omitempty"`
-	Text string `bson:"Text,omitempty" json:"text,omitempty"`
+	ID   primitive.ObjectID `bson:"ingredientid,omitempty" json:"ingredientid,omitempty"`
+	Text string             `bson:"Text,omitempty" json:"text,omitempty"`
 }
 
 type SavedRecipes struct {
