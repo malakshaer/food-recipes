@@ -88,7 +88,7 @@ func Authentication() gin.HandlerFunc {
 		// Retrieve the user object from the database
 		user, err := GetUserByID(claims.UserID)
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "User not found"})
 			return
 		}
 

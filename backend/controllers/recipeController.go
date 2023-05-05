@@ -23,7 +23,7 @@ func CreateRecipe() gin.HandlerFunc {
 		// Get the user details from the context
 		user, exists := c.Get("user")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Failed to retrieve user details"})
 			return
 		}
 		// Get recipe
@@ -48,12 +48,12 @@ func CreateRecipe() gin.HandlerFunc {
 		}
 		// Check if name exists
 		if input.Name == "" {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Recipe name is required"})
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Recipe name is required"})
 			return
 		}
 		// Check if ingredients exists
 		if input.Ingredients == nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Recipe ingredients are required"})
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Recipe ingredients are required"})
 			return
 		}
 		// Create the recipe object
@@ -97,7 +97,7 @@ func GetAllRecipes() gin.HandlerFunc {
 		var recipes []models.Recipe
 		cursor, err := recipeCollection.Find(context.Background(), bson.M{})
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
 		defer cursor.Close(context.Background())
@@ -124,7 +124,7 @@ func GetRecipeById() gin.HandlerFunc {
 		// Get the recipe ID from the request
 		id, err := primitive.ObjectIDFromHex(c.Param("id"))
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -145,14 +145,14 @@ func UpdateRecipeById() gin.HandlerFunc {
 		// Get the recipe id from the request
 		id, err := primitive.ObjectIDFromHex(c.Param("id"))
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Fail to get recipe id"})
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Fail to get recipe id"})
 			return
 		}
 
 		// Get the user details from the context
 		user, exists := c.Get("user")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Failed to retrieve user details"})
 			return
 		}
 
@@ -258,14 +258,14 @@ func DeleteRecipeById() gin.HandlerFunc {
 		// Get the recipe id from the request
 		id, err := primitive.ObjectIDFromHex(c.Param("id"))
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
 
 		// Get the user details from the context
 		user, exists := c.Get("user")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Failed to retrieve user details"})
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Failed to retrieve user details"})
 			return
 		}
 
