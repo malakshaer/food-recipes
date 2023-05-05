@@ -12,6 +12,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/sessions"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -94,4 +95,16 @@ func GetUserIDFromSession(r *http.Request, store *sessions.CookieStore) (string,
 	}
 
 	return userID, nil
+}
+
+// Generates new ObjectIDs for each ingredient
+func GenerateIngredientIDs(ingredients []models.Ingredients) []models.Ingredients {
+	var result []models.Ingredients
+	for _, ingredient := range ingredients {
+		result = append(result, models.Ingredients{
+			ID:   primitive.NewObjectID(),
+			Text: ingredient.Text,
+		})
+	}
+	return result
 }
